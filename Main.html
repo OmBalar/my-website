@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="Main.css"> <!--Link HTML code with css code-->
+    <title>Om Balar</title>
+    <script src = "Main.js"> //Connects HTML code with javascript code</script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .video-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -1;
+      }
+      .video-background video {
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
+      <div class="video-background">
+        <video autoplay loop muted>
+          <source src="background.mp4" type="video/mp4">
+        </video>
+      </div>
+      <p>Hello!</p>
+            <hr>
+            <p>My name is Om Balar.</p>
+            <a href = https://www.linkedin.com/in/om-balar-b06b7a250/><!--Inserts link into images-->
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/800px-LinkedIn_logo_initials.png"
+                     alt="Linkedin Page"
+                style="width:75px;height:75px;"><!--Inserts image and aligns them-->
+            </a>
+            <a href = resume.pdf><!--Inserts link into images-->
+                <img src="https://cdn.iconscout.com/icon/premium/png-256-thumb/career-summary-3872453-3211239.png" alt="Resume"
+                style="width:75px;height:75px;"><!--Inserts image and aligns them-->
+            </a>
+            <a href = https://github.com/OmBalar><!--Inserts link into images-->
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="Resume"
+                style="width:75px;height:75px;"><!--Inserts image and aligns them-->
+            </a>
+  </body>
+</html>
