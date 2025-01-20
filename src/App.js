@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import Grid from '@mui/material/Grid2';
 import "./App.css";
 
 function App() {
@@ -131,6 +132,7 @@ function App() {
 
       <div style={{ height: "30vh" }}></div>
 
+      <Grid container spacing={{xs:80, md:80}}>
       <div
         ref={sectionRefs.current.objective}
         className="resume-container"
@@ -165,7 +167,7 @@ function App() {
           <h2>Programming Skills</h2>
           <ul>
             <li><b>Programming Languages:</b> Python, Java, C, C++, SQL, JavaScript, TypeScript, HTML, CSS</li>
-            <li><b>Technologies:</b> Git, Docker, PostgreSQL, MongoDB, MySQL</li>
+            <li><b>Technologies:</b> Git, Docker, PostgreSQL, MongoDB, MySQL, OpenAPI</li>
             <li><b>Frameworks:</b> React.js, Node.js, Next.js, Spring, JUnit, Mockito, Jest, JavaFX</li>
           </ul>
         </div>
@@ -255,8 +257,10 @@ and skills needed for an upcoming programming competition.</li>
           <p>Find me on LinkedIn at the following link: <a href="https://www.linkedin.com/in/ombalar/">linkedin.com/in/ombalar</a></p>
         </div>
       </div>
+      </Grid>
     </div>
   );
 }
 
 export default App;
+
