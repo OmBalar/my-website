@@ -1,6 +1,12 @@
 /* Import a Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
+:root {
+  --primary-color: #7cbaf9; /* Transparent navbar background */
+  --hover-color: #7cbaf9;
+  --accent-color: #ffffff;
+  --text-color: #ffffff;
+}
 /* Global Styles */
 body, html {
   margin: 0;
@@ -34,12 +40,11 @@ body, html {
 .hero {
   text-align: center;
   position: relative;
-  height: 100vh; /* Full height of the viewport */
+  height: 95vh; /* Full height of the viewport */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
 }
 
 /* Scroll Button */
@@ -135,10 +140,6 @@ body, html {
 }
 
 /* Fade-In Animation for Content */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 
 /* Make the resume container take full height of the viewport */
 .resume-container {
@@ -171,4 +172,181 @@ ul {
 
 li {
   margin-bottom: 10px;
+}
+
+.left-icons {
+  position: fixed;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  z-index: 1000; /* Ensures it appears above other content */
+}
+
+.icon-link {
+  color: #0077b5; /* LinkedIn color */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.icon-link:hover {
+  color: #005582; /* Darker shade for hover effect */
+}
+
+.icon-link-bottom {
+  color: #515151; /* LinkedIn color */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.icon-link-bottom:hover {
+  color: #000000;
+}
+
+/* Smooth scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+nav {
+  background-color: var(--primary-color); /* Transparent background */
+  position: sticky; /* Sticky navbar */
+  top: 0; /* Stick to the top of the screen */
+  z-index: 10; /* Ensure it stays above content */
+  margin: 0; /* Remove any margin around the navbar */
+  padding: 0; /* Remove all padding */
+  width: 100%; /* Make sure it spans the entire width */
+  height: 60px; /* Set a fixed height for the navbar */
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  margin: 0; /* Ensure no margin around the list */
+  padding: 0; /* Remove any padding */
+  width: 100%; /* Ensure the ul spans the full width */
+  justify-content: center;
+}
+
+nav .home-li {
+  margin-right: auto;
+}
+
+nav li {
+  display: flex;
+}
+
+nav a {
+  display: flex;
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 1em 2em;
+  transition: background-color 150ms ease, transform 150ms ease;
+  position: relative;
+}
+
+nav a:hover {
+  background-color: var(--hover-color);
+  transform: scale(1.05);
+}
+
+nav a:focus {
+  outline: 3px solid var(--accent-color);
+}
+
+nav a.active-link {
+  border-bottom: 2px solid var(--accent-color);
+  border-left: transparent;
+  background-color: rgba(0, 113, 255, 0.1);
+}
+
+nav a.accent-link {
+  background-color: var(--accent-color);
+}
+
+#open-sidebar-button {
+  display: none; /* Hidden by default */
+  background: none;
+  border: none;
+  padding: 1em;
+  margin-left: auto;
+  cursor: pointer;
+  position: fixed; /* Fixed position to keep it sticky in place */
+  top: 20px; /* Adjust this value to position it where you want on the screen */
+  right: 20px; /* Adjust this value as well */
+  z-index: 1000; /* Ensure it's above other elements */
+}
+
+#close-sidebar-button {
+  display: none; /* Hidden by default */
+  background: none;
+  border: none;
+  padding: 1em;
+  cursor: pointer;
+  position: fixed; /* Fixed position to keep it sticky in place */
+  top: 20px; /* Adjust this value to position it where you want on the screen */
+  right: 20px; /* Adjust this value as well */
+  z-index: 1000; /* Ensure it's above other elements */
+}
+
+@media screen and (max-width: 1450px) {
+  /* Only show open button when sidebar is closed */
+  #open-sidebar-button {
+    display: block; /* Show open button */
+  }
+
+  /* Show close button when sidebar is open */
+  nav.show #close-sidebar-button {
+    display: block; /* Show close button */
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100vh;
+    width: min(15em, 100%);
+    z-index: 10;
+    border-left: 1px solid var(--hover-color);
+    transition: right 300ms ease-in-out;
+    margin: 0; /* Remove margin around nav */
+    padding: 0; /* Remove all padding */
+    background-color: #4894d3;
+  }
+
+  nav.show {
+    right: 0;
+  }
+
+  nav.show ~ #overlay {
+    display: block;
+  }
+
+  nav ul {
+    width: 100%;
+    flex-direction: column;
+    padding: 0; /* Remove padding for the mobile nav */
+  }
+
+  nav a {
+    width: 100%;
+    padding-left: 2.5em;
+  }
+
+  nav a.active-link {
+    border-bottom: none;
+  }
+
+  nav .home-li {
+    margin-right: unset;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Ensures padding and borders are accounted for in element's total width/height */
 }

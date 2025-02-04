@@ -1,6 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import Grid from '@mui/material/Grid2';
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import EmailIcon from "@mui/icons-material/Email";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import "./App.css";
+
+const menuItems = {
+  home: 0,
+  objective: null,
+  education: null,
+  programmingskills: null,
+}
 
 function App() {
   const sectionRefs = useRef({
@@ -16,77 +26,7 @@ function App() {
   });
 
   const [currentSection, setCurrentSection] = useState("home");
-  const [isScrolling, setIsScrolling] = useState(false); // Track if scroll is in progress
 
-  // Scroll to the target section by ID
-  const scrollToSection = (section) => {
-    sectionRefs.current[section].current.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "nearest",
-    });
-
-    // Use setTimeout to update the URL hash after the scroll
-    setTimeout(() => {
-      window.location.hash = `#${section}`;
-    }, 500); // After scroll animation duration
-  };
-
-  
-
-  // Attach scroll event listener when the component is mounted
-  useEffect(() => {
-    const handleScroll = (e) => {
-      if (isScrolling) return; // Ignore scroll if one is already in progress
-  
-      setIsScrolling(true); // Set flag to indicate scroll is in progress
-  
-      if (e.deltaY > 0) {
-        // Scrolling down, go to the next section
-        scrollToNextSection();
-      } else if (e.deltaY < 0) {
-        // Scrolling up, go to the previous section
-        scrollToPreviousSection();
-      }
-  
-      // Reset the scrolling flag after the scroll animation duration
-      setTimeout(() => {
-        setIsScrolling(false); // Re-enable scrolling after the delay
-      }, 1500); // Adjust this duration to match your scroll animation duration
-    };
-
-    // Scroll to the next section
-  const scrollToNextSection = () => {
-    const sections = Object.keys(sectionRefs.current);
-    const currentIndex = sections.indexOf(currentSection);
-
-    if (currentIndex < sections.length - 1) {
-      const nextSection = sections[currentIndex + 1];
-      setCurrentSection(nextSection);
-      scrollToSection(nextSection);
-    }
-  };
-
-  // Scroll to the previous section
-  const scrollToPreviousSection = () => {
-    const sections = Object.keys(sectionRefs.current);
-    const currentIndex = sections.indexOf(currentSection);
-
-    if (currentIndex > 0) {
-      const prevSection = sections[currentIndex - 1];
-      setCurrentSection(prevSection);
-      scrollToSection(prevSection);
-    }
-  };
-  
-    window.addEventListener("wheel", handleScroll, { passive: true });
-  
-    return () => {
-      window.removeEventListener("wheel", handleScroll);
-    };
-  }, [isScrolling, currentSection]);  // No need to include handleScroll explicitly
-
-  // Handle intersection observer to update URL when a section is in view
   useEffect(() => {
     const observerOptions = {
       root: null, // Use the viewport as the root
@@ -98,7 +38,8 @@ function App() {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const sectionId = entry.target.id;
-          window.location.hash = `#${sectionId}`; // Update the URL hash when the section is in view
+          //window.location.hash = `#${sectionId}`; // Update the URL hash when the section is in view
+          setCurrentSection(sectionId);
         }
       });
     }, observerOptions);
@@ -113,8 +54,119 @@ function App() {
     };
   }, []);
 
+  const scrollToSection = (section) => {
+    const target = sectionRefs.current[section]?.current;
+    if (target) {
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  };
+
+  const navbarRef = useRef(null);
+  const overlayRef = useRef(null);
+
+  function openSidebar() {
+    const navbar = document.getElementById("navbar");
+    const openButton = document.getElementById("open-sidebar-button");
+  
+    navbar.classList.add("show");
+    openButton.setAttribute("aria-expanded", "true");
+    openButton.style.display = "none"; // Hide the button
+  }
+  
+  function closeSidebar() {
+    const navbar = document.getElementById("navbar");
+    const openButton = document.getElementById("open-sidebar-button");
+  
+    navbar.classList.remove("show");
+    openButton.setAttribute("aria-expanded", "false");
+    openButton.style.display = "block"; // Show the button again
+  }
+
+  const removeOutline = (event) => {
+    event.target.blur();
+  };
+
+  const createNavItem = (scrollToSection, label, href, currentSection, setCurrentSection) => {
+    return (
+      <li>
+        <a
+          href={href}
+          className={currentSection === (href == "#home" ? "" : href.replace("#", "")) ? "active-link" : ""}
+          onClick={(e) => {
+            e.preventDefault(); // Prevent default anchor behavior
+            window.location.hash = `${href}`;
+            scrollToSection(href.replace("#", "")); // Scroll to the section
+            setCurrentSection(href.replace("#", "")); // Update the current section
+            removeOutline(e); // Remove focus outline after clicking
+          }}
+        >
+          {label}
+        </a>
+      </li>
+    );
+  };
+
+
   return (
     <div className="App">
+      <button
+        id="open-sidebar-button"
+        aria-label="open sidebar"
+        aria-expanded="false"
+        aria-controls="navbar"
+        onClick={openSidebar}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000">
+          <path d="M165.13-254.62q-10.68 0-17.9-7.26-7.23-7.26-7.23-18t7.23-17.86q7.22-7.13 17.9-7.13h629.74q10.68 0 17.9 7.26 7.23 7.26 7.23 18t-7.23 17.87q-7.22 7.12-17.9 7.12H165.13Zm0-200.25q-10.68 0-17.9-7.27-7.23-7.26-7.23-17.99 0-10.74 7.23-17.87 7.22-7.13 17.9-7.13h629.74q10.68 0 17.9 7.27 7.23 7.26 7.23 17.99 0 10.74-7.23 17.87-7.22 7.13-17.9 7.13H165.13Zm0-200.26q-10.68 0-17.9-7.26-7.23-7.26-7.23-18t7.23-17.87q7.22-7.12 17.9-7.12h629.74q10.68 0 17.9 7.26 7.23 7.26 7.23 18t-7.23 17.86q-7.22 7.13-17.9 7.13H165.13Z" />
+        </svg>
+      </button>
+
+      {/* Sidebar Navigation */}
+      <nav id="navbar" ref={navbarRef} className="sidebar">
+        <ul>
+          <li>
+            <button
+              id="close-sidebar-button"
+              aria-label="close sidebar"
+              onClick={closeSidebar}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000">
+                <path d="m480-444.62-209.69 209.7q-7.23 7.23-17.5 7.42-10.27.19-17.89-7.42-7.61-7.62-7.61-17.7 0-10.07 7.61-17.69L444.62-480l-209.7-209.69q-7.23-7.23-7.42-17.5-.19-10.27 7.42-17.89 7.62-7.61 17.7-7.61 10.07 0 17.69 7.61L480-515.38l209.69-209.7q7.23-7.23 17.5-7.42 10.27-.19 17.89 7.42 7.61 7.62 7.61 17.7 0 10.07-7.61 17.69L515.38-480l209.7 209.69q7.23 7.23 7.42 17.5.19 10.27-7.42 17.89-7.62 7.61-17.7 7.61-10.07 0-17.69-7.61L480-444.62Z" />
+              </svg>
+            </button>
+          </li>
+          {createNavItem(scrollToSection, "Home", "#home", currentSection, setCurrentSection)}
+          {createNavItem(scrollToSection, "Objective", "#objective", currentSection, setCurrentSection)}
+          {createNavItem(scrollToSection, "Education", "#education", currentSection, setCurrentSection)}
+          {createNavItem(scrollToSection, "Programming Skills", "#programmingskills", currentSection, setCurrentSection)}
+          {createNavItem(scrollToSection, "Work Experience", "#experience", currentSection, setCurrentSection)}
+          {createNavItem(scrollToSection, "Projects", "#projects", currentSection, setCurrentSection)}
+          {createNavItem(scrollToSection, "Extra-Curricular", "#extracurricular", currentSection, setCurrentSection)}
+          {createNavItem(scrollToSection, "Coursework", "#relevantcourses", currentSection, setCurrentSection)}
+          {createNavItem(scrollToSection, "Contact Me", "#connect", currentSection, setCurrentSection)}
+        </ul>
+      </nav>
+
+      {/* Overlay */}
+      <div id="overlay" ref={overlayRef} onClick={closeSidebar} aria-hidden="true"></div>
+
+      <div className="left-icons">
+        <a
+          href="https://www.linkedin.com/in/ombalar/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="icon-link"
+        >
+          <LinkedInIcon fontSize="large" />
+        </a>
+        <a href="mailto:om.balar2@gmail.com" className="icon-link">
+          <EmailIcon fontSize="large" />
+        </a>
+      </div>
+
       <div ref={sectionRefs.current.home} className="hero">
         <h1 className="intro">
           Hello,
@@ -132,7 +184,7 @@ function App() {
 
       <div style={{ height: "30vh" }}></div>
 
-      <Grid container spacing={{xs:80, md:80}}>
+      <Grid container spacing={{xs:80, md:10}}>
       <div
         ref={sectionRefs.current.objective}
         className="resume-container"
@@ -253,8 +305,32 @@ and skills needed for an upcoming programming competition.</li>
         id="connect"
       >
         <div className="resume-section">
-          <h2>Connect With Me</h2>
-          <p>Find me on LinkedIn at the following link: <a href="https://www.linkedin.com/in/ombalar/">linkedin.com/in/ombalar</a></p>
+          <h2>Looking To Hire?</h2>
+          <ul>
+            <li>Looking to hire a Software Engineer for a Summer 2025 co-op (up to 16 months)?</li>
+            <li>Please reach out to me below!</li>
+            <li>
+              <a
+                href="https://www.linkedin.com/in/ombalar/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="icon-link-bottom"
+              >
+                <LinkedInIcon fontSize="large" />
+              </a>
+              <a href="mailto:om.balar2@gmail.com" className="icon-link-bottom">
+                <EmailIcon fontSize="large" />
+              </a>
+              <a
+                href="https://github.com/OmBalar"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="icon-link-bottom"
+              >
+                <GitHubIcon fontSize="large" />
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
       </Grid>
