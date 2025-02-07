@@ -253,6 +253,12 @@ visually appealing portfolios, enabling them to focus on what matters without wo
 were created using TypeScript to increase readability and allow for Object-Oriented Programming. Designed and implemented a PostgreSQL database for its reliability, connectivity, speed, and security.</li>
           </ul>
           <ul>
+            <li><b>Job Bank Application - Software Architect</b></li>
+            <li>I developed a dynamic job bank application using HTML, CSS, JSP, Servlets, and MySQL, following the n-layer architecture pattern to ensure modularity and maintainability. The application enables users 
+              to register, search for job listings, and securely manage their profiles. Hosted on Apache Tomcat, the project integrates with a MySQL database to handle user authentication, job postings, and data persistence. 
+              This project demonstrates my ability to build scalable, full-stack web applications while leveraging industry-standard technologies and best practices.</li>
+          </ul>
+          <ul>
             <li><b>Data Analysis in C - Data Analyst</b></li>
             <li>Worked with a team to analyze real data collected by Statistics Canada about the prevalence of diabetes in
 Canada. Used C to perform all computations and used Gnuplot to plot the data to show a visual representation that can
