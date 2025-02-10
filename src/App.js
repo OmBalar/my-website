@@ -245,24 +245,59 @@ function App() {
         id="projects"
       >
         <div className="resume-section">
-          <h2>Projects</h2>
+          <h2>Projects I</h2>
           <ul>
             <li><b>Portify - Full Stack Developer</b></li>
             <li>Independently developing an open-source web application that allows users to neatly store projects and create
 visually appealing portfolios, enabling them to focus on what matters without worrying about front-end design. Front-end and back-end development use the React.js and Node.js frameworks, respectively. These services
-were created using TypeScript to increase readability and allow for Object-Oriented Programming. Designed and implemented a PostgreSQL database for its reliability, connectivity, speed, and security.</li>
+were created using TypeScript to increase readability and allow for Object-Oriented Programming. Designed and implemented a PostgreSQL database for its reliability, connectivity, speed, and security. You can view the code on my <a href="https://github.com/OmBalar/Portify" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
           </ul>
           <ul>
-            <li><b>Job Bank Application - Software Architect</b></li>
-            <li>I developed a dynamic job bank application using HTML, CSS, JSP, Servlets, and MySQL, following the n-layer architecture pattern to ensure modularity and maintainability. The application enables users 
-              to register, search for job listings, and securely manage their profiles. Hosted on Apache Tomcat, the project integrates with a MySQL database to handle user authentication, job postings, and data persistence. 
-              This project demonstrates my ability to build scalable, full-stack web applications while leveraging industry-standard technologies and best practices.</li>
+          <li><b>Job Bank Application - Software Architect</b></li>
+          <li>I developed a dynamic job bank application using HTML, CSS, JSP, Servlets, and MySQL, following the n-layer architecture pattern to ensure modularity and maintainability. The application allows users to 
+            register, search for job listings, and securely manage their profiles. I deployed the application on Google Cloud Platform (GCP) using Compute Engine to provide scalable cloud hosting, ensuring high availability 
+            and performance. The project is hosted on Apache Tomcat and integrated with a MySQL database to handle user authentication, job postings, and data persistence. This demonstrates my ability to build scalable, full-stack 
+            web applications while leveraging industry-standard technologies and best practices. You can view the project at <a href="http://34.60.134.138:8080/myapp/" target="_blank" rel="noopener noreferrer">jobbank</a>, although it is still under development.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        className="resume-container"
+        id="projects"
+      >
+        <div className="resume-section">
+          <h2>Projects II</h2>
+          <ul>
+            <li><b>Bank Account Application - Software Engineer</b></li>
+            <li>I developed a bank account management system using Java and JavaFX for the graphical user interface. The application allows customers to log in, make deposits, withdraw funds, check balances, and make tiered online purchases based on account levels. I applied object-oriented design principles and used key concepts such as State Design Pattern, Singleton Pattern, and UML diagrams to model the system’s architecture. This project strengthened my skills in developing Java-based applications, working with GUI design, and applying design patterns to manage dynamic behavior. View the code for this project on my <a href="https://github.com/OmBalar/Bank-Application" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
+          </ul>
+          <ul>
+            <li><b>Implementation of Gradient Descent for Regression Models - Machine Learning Engineer</b></li>
+            <li>I implemented Linear and Logistic Regression algorithms from scratch using Python, focusing on Gradient Descent optimization. For Linear Regression, I predicted student final marks from midterm scores by standardizing data, calculating cost functions, and iteratively updating parameters (slope, intercept). I visualized regression lines and error reduction across iterations, comparing results with and without feature standardization to demonstrate its impact on model convergence. In Logistic Regression, I classified coronary heart disease risk through EDA, one-hot encoding categorical variables, and standardizing features. I defined a sigmoid hypothesis, implemented batch/mini-batch Gradient Descent, and analyzed learning curves to optimize binary cross-entropy loss. Results were validated against Python’s LogisticRegression library. Using NumPy, Pandas, and Matplotlib, I reinforced skills in data preprocessing, algorithm mechanics, hyperparameter tuning, and visualization, highlighting the critical role of standardization and iterative optimization in model performance.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        className="resume-container"
+        id="projects"
+      >
+        <div className="resume-section">
+          <h2>Projects III</h2>
+          <ul>
+            <li><b>Payroll Management DBMS - Database Designer</b></li>
+            <li>In this team project, I co-developed a Payroll Management DBMS using JavaFX for the frontend and Oracle SQL for the backend. I contributed to designing entities (employees, payroll, taxes) and relationships, normalized the schema to 3NF/BCNF, and built SQL queries for payroll processing and report generation. The JavaFX GUI streamlined tasks like salary calculations, deductions, and data visualization, while Unix shell scripts automated backend operations. Collaborating via Git, we delivered a user-friendly system that demonstrated proficiency in database design, full-stack integration, and team-based software development.</li>
+          </ul>
+          <ul>
+            <li><b>Robot Guidance - Embedded Systems Engineer</b></li>
+            <li>In this team project, we programmed an autonomous robot using assembly language to navigate and solve a maze, demonstrating adaptive learning by backtracking from dead ends and updating its path decisions. Collaboratively, we designed motor control logic for precise turns, and debugged timing/state issues using breakpoints and LCD instrumentation. The robot successfully learned optimal routes, highlighting teamwork in low-level programming and embedded systems problem-solving. The code for this project is available on my <a href="https://github.com/OmBalar/Robot-Guidance" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
           </ul>
           <ul>
             <li><b>Data Analysis in C - Data Analyst</b></li>
             <li>Worked with a team to analyze real data collected by Statistics Canada about the prevalence of diabetes in
 Canada. Used C to perform all computations and used Gnuplot to plot the data to show a visual representation that can
-help further analyze the data.</li>
+help further analyze the data. The code for this project is on my <a href="https://github.com/OmBalar/Data-Analysis" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
           </ul>
         </div>
       </div>
