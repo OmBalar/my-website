@@ -257,7 +257,7 @@ were created using TypeScript to increase readability and allow for Object-Orien
           <li>I developed a dynamic job bank application using HTML, CSS, JSP, Servlets, and MySQL, following the n-layer architecture pattern to ensure modularity and maintainability. The application allows users to 
             register, search for job listings, and securely manage their profiles. I deployed the application on Google Cloud Platform (GCP) using Compute Engine to provide scalable cloud hosting, ensuring high availability 
             and performance. The project is hosted on Apache Tomcat and integrated with a MySQL database to handle user authentication, job postings, and data persistence. This demonstrates my ability to build scalable, full-stack 
-            web applications while leveraging industry-standard technologies and best practices. You can view the project at <a href="http://35.224.29.101:8080/my-app/" target="_blank" rel="noopener noreferrer">jobbank</a>, although it is still under development.</li>
+            web applications while leveraging industry-standard technologies and best practices. You can view the project at <a href="http://35.226.49.197:8080/my-app/" target="_blank" rel="noopener noreferrer">jobbank</a>, although it is still under development.</li>
           </ul>
         </div>
       </div>
