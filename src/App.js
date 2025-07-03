@@ -231,7 +231,21 @@ function App() {
         id="experience"
       >
         <div className="resume-section">
-          <h2>Work Experience</h2>
+          <h2>Work Experience I</h2>
+          <ul>
+            <li><b>Software Developer, Environment and Climate Change Canada [May 2025-Present]</b></li>
+            <li>I’m currently a Software Developer Intern at Environment and Climate Change Canada on a 16-month term. I work across the stack using Angular, Java (Dropwizard), Python, and SQL to build internal tools. So far, I’ve developed a content editing feature for clients and built a pipeline to process over 1.5 million XML files, improving data automation and accuracy.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        ref={sectionRefs.current.experience}
+        className="resume-container"
+        id="experience"
+      >
+        <div className="resume-section">
+          <h2>Work Experience II</h2>
           <ul>
             <li><b>Software Engineer, Reviewer.ly [May 2024-August 2024]</b></li>
             <li>I worked as a Software Engineer Intern to develop the website for the Reviewer.ly project at TMU’s LS3 Lab. I enhanced user profile management by implementing features to customize the profile using React.js, Next.js, and Spring Boot, leveraging react-query for efficient API interactions. I also developed a feature to view and resolve error reports, implementing an SMTP service for email notifications upon resolution, streamlining issue tracking and communication. I used OpenAPI and gRPC for efficient data retrieval from a MongoDB database, ensuring application performance and reliability while conducting thorough testing with Jest and Mockito to reduce potential bugs. During my work term, I had to address challenges in storing large profile pictures by compressing images on both the front-end and back-end, optimizing storage efficiency while maintaining image quality.</li>
