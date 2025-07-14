@@ -204,7 +204,7 @@ function App() {
         <div className="resume-section">
           <h2>Education</h2>
           <ul>
-            <li>Bachelor of Engineering - Computer Engineering, Toronto Metropolitan University [2022-2026]</li>
+            <li>Bachelor of Engineering - Computer Engineering, Toronto Metropolitan University [2022-2027]</li>
             <li>Ontario Secondary School Diploma - Northview Heights Secondary School [2018-2022]</li>
           </ul>
         </div>
@@ -218,7 +218,7 @@ function App() {
         <div className="resume-section">
           <h2>Programming Skills</h2>
           <ul>
-            <li><b>Programming Languages:</b> Python, Java, C, C++, SQL, JavaScript, TypeScript, HTML, CSS</li>
+            <li><b>Programming Languages:</b> Python, Java, C, C++, SQL, JavaScript, TypeScript, HTML, CSS, VHDL</li>
             <li><b>Technologies:</b> Git, Docker, PostgreSQL, MongoDB, MySQL, OpenAPI</li>
             <li><b>Frameworks:</b> React.js, Node.js, Next.js, Spring, JUnit, Mockito, Jest, JavaFX</li>
           </ul>
