@@ -361,7 +361,7 @@ and skills needed for an upcoming programming competition.</li>
         <div className="resume-section">
           <h2>Looking To Hire?</h2>
           <ul>
-            <li>Looking to hire a Software Engineer for a Summer 2025 co-op (up to 16 months)?</li>
+            <li>Looking to hire a Software Engineer for a Summer 2026 co-op?</li>
             <li>Please reach out to me below!</li>
             <li>
               <a
