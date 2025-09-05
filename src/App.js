@@ -234,7 +234,11 @@ function App() {
           <h2>Work Experience I</h2>
           <ul>
             <li><b>Software Developer, Environment and Climate Change Canada [May 2025-Present]</b></li>
-            <li>I'm currently a Software Developer Intern at Environment and Climate Change Canada, where I am focused on building internal tools that support Canada’s weather and climate services. In this role, I’ve contributed to both frontend and backend development using Angular, Java, Python, and SQL. In the 2 months that I've worked here, I developed a content editing feature that allows clients to manage their own web content and images, reducing their dependency on developers. I also created a data processing pipeline to efficiently analyze over 1.5 million XML forecast files and update key database records, improving data accuracy and automation. This experience has allowed me to work on real-world production systems, collaborate with cross-functional teams, and strengthen my full-stack development skills.</li>
+            <li>I am currently a Software Developer Intern at Environment and Climate Change Canada, where I focus on building internal tools that support Canada’s weather and climate services. In this role, I contribute to both frontend and backend development using Angular, Java, Python, and SQL.
+
+So far, I have developed a content editing feature that allows clients to manage their own web content and images, reducing their reliance on developers. I also built an analytics page that filters and counts certain strings from the database, added pagination to make large datasets easier to navigate, and introduced a daily refreshed JSON cache to minimize database queries and improve performance. In addition, I created a data processing pipeline that efficiently analyzes over 1.5 million XML forecast files and updates key database records, which has improved both accuracy and automation.
+
+This experience has given me the opportunity to work on real-world production systems, collaborate with cross-functional teams, and further strengthen my full-stack development skills.</li>
           </ul>
         </div>
       </div>
