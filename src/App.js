@@ -192,7 +192,7 @@ function App() {
       >
         <div className="resume-section">
           <h2>Objective</h2>
-          <p>As a motivated third-year Computer Engineering student, I am eager to apply my skills in software engineering, problem-solving, and optimization to tackle complex challenges. With experience in programming languages like Python and Java, and technologies such as React.js and Node.js, I am excited to contribute to innovative and efficient solutions. I aim to grow as an engineer and make meaningful contributions to a forward-thinking company.</p>
+          <p>As a motivated fourth-year Computer Engineering student, I am eager to apply my skills in software engineering, problem-solving, and optimization to tackle complex challenges. With experience in programming languages like Python and Java, and technologies such as React.js and Node.js, I am excited to contribute to innovative and efficient solutions. I aim to grow as an engineer and make meaningful contributions to a forward-thinking company.</p>
         </div>
       </div>
 
