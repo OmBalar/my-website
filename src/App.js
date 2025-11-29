@@ -3,25 +3,29 @@ import Grid from '@mui/material/Grid2';
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import EmailIcon from "@mui/icons-material/Email";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import LanguageIcon from '@mui/icons-material/Language';
 import "./App.css";
 
-const menuItems = {
-  home: 0,
-  objective: null,
-  education: null,
-  programmingskills: null,
-}
+const NAV_LINKS = {
+  home: "Home",
+  summary: "About Me",
+  education: "Education",
+  skills: "Skills",
+  experience: "Experience",
+  projects: "Projects",
+  extracurricular: "Extra-Curricular", // Kept this from the old site
+  connect: "Contact",
+};
 
 function App() {
   const sectionRefs = useRef({
     home: React.createRef(),
-    objective: React.createRef(),
+    summary: React.createRef(),
     education: React.createRef(),
-    programmingskills: React.createRef(),
+    skills: React.createRef(),
     experience: React.createRef(),
     projects: React.createRef(),
     extracurricular: React.createRef(),
-    relevantcourses: React.createRef(),
     connect: React.createRef(),
   });
 
@@ -29,28 +33,28 @@ function App() {
 
   useEffect(() => {
     const observerOptions = {
-      root: null, // Use the viewport as the root
-      rootMargin: "-100px", // Trigger when 100px before entering the viewport
-      threshold: 0.25, // Trigger when 25% of the section is in view
+      root: null,
+      rootMargin: "-100px",
+      threshold: 0.25,
     };
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const sectionId = entry.target.id;
-          //window.location.hash = `#${sectionId}`; // Update the URL hash when the section is in view
           setCurrentSection(sectionId);
         }
       });
     }, observerOptions);
 
-    // Observe each section
-    Object.values(sectionRefs.current).forEach((sectionRef) => {
-      observer.observe(sectionRef.current);
+    Object.keys(NAV_LINKS).forEach((key) => {
+      if (sectionRefs.current[key]?.current) {
+        observer.observe(sectionRefs.current[key].current);
+      }
     });
 
     return () => {
-      observer.disconnect(); // Cleanup observer when component unmounts
+      observer.disconnect();
     };
   }, []);
 
@@ -65,42 +69,43 @@ function App() {
   };
 
   const navbarRef = useRef(null);
-  const overlayRef = useRef(null);
 
   function openSidebar() {
     const navbar = document.getElementById("navbar");
     const openButton = document.getElementById("open-sidebar-button");
-  
     navbar.classList.add("show");
     openButton.setAttribute("aria-expanded", "true");
-    openButton.style.display = "none"; // Hide the button
+    openButton.style.display = "none";
   }
   
   function closeSidebar() {
     const navbar = document.getElementById("navbar");
     const openButton = document.getElementById("open-sidebar-button");
-  
     navbar.classList.remove("show");
     openButton.setAttribute("aria-expanded", "false");
-    openButton.style.display = "block"; // Show the button again
+    openButton.style.display = "block";
   }
 
   const removeOutline = (event) => {
     event.target.blur();
   };
 
-  const createNavItem = (scrollToSection, label, href, currentSection, setCurrentSection) => {
+  const createNavItem = (key, label) => {
+    const href = `#${key}`;
+    const isActive = currentSection === key || (key === 'home' && currentSection === '');
+
     return (
-      <li>
+      <li key={key}>
         <a
           href={href}
-          className={currentSection === (href == "#home" ? "" : href.replace("#", "")) ? "active-link" : ""}
+          className={isActive ? "active-link" : ""}
           onClick={(e) => {
-            e.preventDefault(); // Prevent default anchor behavior
-            window.location.hash = `${href}`;
-            scrollToSection(href.replace("#", "")); // Scroll to the section
-            setCurrentSection(href.replace("#", "")); // Update the current section
-            removeOutline(e); // Remove focus outline after clicking
+            e.preventDefault();
+            window.location.hash = (key === 'home' ? '' : href);
+            scrollToSection(key);
+            setCurrentSection(key);
+            removeOutline(e);
+            closeSidebar();
           }}
         >
           {label}
@@ -108,7 +113,6 @@ function App() {
       </li>
     );
   };
-
 
   return (
     <div className="App">
@@ -124,7 +128,6 @@ function App() {
         </svg>
       </button>
 
-      {/* Sidebar Navigation */}
       <nav id="navbar" ref={navbarRef} className="sidebar">
         <ul>
           <li>
@@ -138,36 +141,27 @@ function App() {
               </svg>
             </button>
           </li>
-          {createNavItem(scrollToSection, "Home", "#home", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Objective", "#objective", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Education", "#education", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Programming Skills", "#programmingskills", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Work Experience", "#experience", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Projects", "#projects", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Extra-Curricular", "#extracurricular", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Coursework", "#relevantcourses", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Contact Me", "#connect", currentSection, setCurrentSection)}
+          {Object.entries(NAV_LINKS).map(([key, label]) => createNavItem(key, label))}
         </ul>
       </nav>
 
-      {/* Overlay */}
-      <div id="overlay" ref={overlayRef} onClick={closeSidebar} aria-hidden="true"></div>
+      <div id="overlay" onClick={closeSidebar} aria-hidden="true"></div>
 
       <div className="left-icons">
         <a
-          href="https://www.linkedin.com/in/ombalar/"
+          href="https://www.linkedin.com/in/om-balar-b06b7a250/"
           target="_blank"
           rel="noopener noreferrer"
           className="icon-link"
         >
           <LinkedInIcon fontSize="large" />
         </a>
-        <a href="mailto:om.balar2@gmail.com" className="icon-link">
+        <a href="mailto:om.balar@torontomu.com" className="icon-link">
           <EmailIcon fontSize="large" />
         </a>
       </div>
 
-      <div ref={sectionRefs.current.home} className="hero">
+      <div ref={sectionRefs.current.home} className="hero" id="home">
         <h1 className="intro">
           Hello,
           <br />
@@ -176,7 +170,7 @@ function App() {
         <h1 className="name">Om Balar</h1>
         <button
           className="scroll-button"
-          onClick={() => scrollToSection("objective")}
+          onClick={() => scrollToSection("summary")}
         >
           ↓ Scroll Down to Learn More About Me
         </button>
@@ -185,14 +179,19 @@ function App() {
       <div style={{ height: "30vh" }}></div>
 
       <Grid container spacing={{xs:80, md:10}}>
+      
       <div
-        ref={sectionRefs.current.objective}
+        ref={sectionRefs.current.summary}
         className="resume-container"
-        id="objective"
+        id="summary"
       >
         <div className="resume-section">
-          <h2>Objective</h2>
-          <p>As a motivated fourth-year Computer Engineering student, I am eager to apply my skills in software engineering, problem-solving, and optimization to tackle complex challenges. With experience in programming languages like Python and Java, and technologies such as React.js and Node.js, I am excited to contribute to innovative and efficient solutions. I aim to grow as an engineer and make meaningful contributions to a forward-thinking company.</p>
+          <h2>About Me</h2>
+          <p>
+            As a motivated fourth-year Computer Engineering student, I specialize in <b>Distributed Systems</b>, <b>Cloud Computing</b>, and <b>AWS Architecture</b>. 
+            I am passionate about building fault-tolerant systems and leveraging AI tools to deliver operational excellence.
+            With a strong foundation in Python, Java, and scalable microservices, I aim to solve complex engineering challenges and contribute meaningful solutions to forward-thinking companies.
+          </p>
         </div>
       </div>
 
@@ -204,23 +203,29 @@ function App() {
         <div className="resume-section">
           <h2>Education</h2>
           <ul>
-            <li>Bachelor of Engineering - Computer Engineering, Toronto Metropolitan University [2022-2027]</li>
-            <li>Ontario Secondary School Diploma - Northview Heights Secondary School [2018-2022]</li>
+            <li>
+              <b>Toronto Metropolitan University (Formerly Ryerson University)</b>
+              <br/>Bachelor of Engineering - Computer Engineering (Co-op) [Sep. 2022 – Apr. 2027]
+            </li>
+            <li><b>Achievements:</b> Dean's List (CGPA: 4.29/4.33)</li>
+            <li><b>Certifications:</b> JetBrains Academy & AWS: Full-Stack Cloud Developer (ECS, ECR, CodeDeploy).</li>
+            <li><b>Relevant Coursework:</b> Advanced Algorithms, Database Systems, Software Design and Architecture, Machine Learning, Operating Systems, Probability and Stochastic Processes.</li>
           </ul>
         </div>
       </div>
 
       <div
-        ref={sectionRefs.current.programmingskills}
+        ref={sectionRefs.current.skills}
         className="resume-container"
-        id="programmingskills"
+        id="skills"
       >
         <div className="resume-section">
-          <h2>Programming Skills</h2>
+          <h2>Technical Skills</h2>
           <ul>
-            <li><b>Programming Languages:</b> Python, Java, C, C++, SQL, JavaScript, TypeScript, HTML, CSS, VHDL</li>
-            <li><b>Technologies:</b> Git, Docker, PostgreSQL, MongoDB, MySQL, OpenAPI</li>
-            <li><b>Frameworks:</b> React.js, Node.js, Next.js, Spring, JUnit, Mockito, Jest, JavaFX</li>
+            <li><b>Languages:</b> Java, Python, C, C++, TypeScript, JavaScript, SQL, Bash, VHDL</li>
+            <li><b>Cloud & DevOps:</b> AWS (ECS, ECR, CodeDeploy, S3, EC2), Docker, Kubernetes, Jenkins CI/CD</li>
+            <li><b>Frameworks:</b> Spring Boot, React.js, AngularJS, Node.js, Next.js, JUnit, Mockito, JavaFX</li>
+            <li><b>Databases & Systems:</b> PostgreSQL, MongoDB, Redis, Kafka, Microservices, Linux/Unix</li>
           </ul>
         </div>
       </div>
@@ -232,27 +237,43 @@ function App() {
       >
         <div className="resume-section">
           <h2>Work Experience I</h2>
-          <ul>
-            <li><b>Software Developer, Environment and Climate Change Canada [May 2025-Present]</b></li>
-            <li>I am currently a Software Developer Intern at Environment and Climate Change Canada, where I focus on building internal tools that support Canada’s weather and climate services. In this role, I contribute to both frontend and backend development using Angular, Java, Python, and SQL.
-
-So far, I have developed a content editing feature that allows clients to manage their own web content and images, reducing their reliance on developers. I also built an analytics page that filters and counts certain strings from the database, added pagination to make large datasets easier to navigate, and introduced a daily refreshed JSON cache to minimize database queries and improve performance. In addition, I created a data processing pipeline that efficiently analyzes over 1.5 million XML forecast files and updates key database records, which has improved both accuracy and automation.
-
-This experience has given me the opportunity to work on real-world production systems, collaborate with cross-functional teams, and further strengthen my full-stack development skills.</li>
-          </ul>
+          
+          <div className="job-entry" style={{ marginBottom: '3rem' }}>
+            <h3>Software Developer Intern | Environment and Climate Change Canada</h3>
+            <p className="job-meta">Toronto, ON | May 2025 – Present</p>
+            <br />
+            <p className="job-description">
+              I am currently building internal tools that support Canada’s weather services, contributing to both frontend (Angular) and backend (Java Spring Boot) development. My focus is on modernizing legacy systems into scalable microservices.
+            </p>
+            <ul>
+              <li>Migrated legacy monolithic modules to <b>Java Spring Boot microservices</b>, achieving <b>99.9% uptime</b>.</li>
+              <li>Architected a <b>Distributed Data Ingestion</b> pipeline processing <b>1.5 million+ XML files</b> daily, optimizing data availability by 60%.</li>
+              <li>Integrated <b>Redis caching</b> to handle high-concurrency traffic, reducing API latency from 800ms to <b>150ms</b>.</li>
+              <li>Integrated <b>Cypress</b> E2E testing into the CI/CD lifecycle, reducing regression bugs by 50%.</li>
+            </ul>
+          </div>
         </div>
-      </div>
-
-      <div
+        </div>
+        <div
         className="resume-container"
         id="experience"
       >
         <div className="resume-section">
-          <h2>Work Experience II</h2>
-          <ul>
-            <li><b>Software Engineer, Reviewer.ly [May 2024-August 2024]</b></li>
-            <li>I worked as a Software Engineer Intern to develop the website for the Reviewer.ly project at TMU’s LS3 Lab. I enhanced user profile management by implementing features to customize the profile using React.js, Next.js, and Spring Boot, leveraging react-query for efficient API interactions. I also developed a feature to view and resolve error reports, implementing an SMTP service for email notifications upon resolution, streamlining issue tracking and communication. I used OpenAPI and gRPC for efficient data retrieval from a MongoDB database, ensuring application performance and reliability while conducting thorough testing with Jest and Mockito to reduce potential bugs. During my work term, I had to address challenges in storing large profile pictures by compressing images on both the front-end and back-end, optimizing storage efficiency while maintaining image quality.</li>
-          </ul>
+          <div className="job-entry">
+            <h2>Work Experience II</h2>
+            <h3>Software Engineer Intern | Reviewer.ly</h3>
+            <p className="job-meta">Toronto, ON | May 2024 – Aug. 2024</p>
+            <br />
+            <p className="job-description">
+              I worked on the core platform at TMU’s LS3 Lab, enhancing user profile management and error tracking. I tackled challenges in storage efficiency and backend performance for a growing user base.
+            </p>
+            <ul>
+              <li>Integrated <b>AWS S3</b> for efficient media storage, reducing cloud infrastructure costs by <b>25%</b>.</li>
+              <li>Migrated REST endpoints to <b>gRPC</b>, achieving a <b>30% reduction</b> in payload size.</li>
+              <li>Built a fault-tolerant error tracking microservice using <b>Java</b> and <b>RabbitMQ</b>.</li>
+              <li>Delivered a user analytics dashboard using <b>React.js</b> and <b>PostgreSQL</b> for 10,000+ active users.</li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -262,60 +283,65 @@ This experience has given me the opportunity to work on real-world production sy
         id="projects"
       >
         <div className="resume-section">
-          <h2>Projects I</h2>
-          <ul>
-            <li><b>Portify - Full Stack Developer</b></li>
-            <li>Independently developing an open-source web application that allows users to neatly store projects and create
-visually appealing portfolios, enabling them to focus on what matters without worrying about front-end design. Front-end and back-end development use the React.js and Node.js frameworks, respectively. These services
-were created using TypeScript to increase readability and allow for Object-Oriented Programming. Designed and implemented a PostgreSQL database for its reliability, connectivity, speed, and security. You can view the code on my <a href="https://github.com/OmBalar/Portify" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
-          </ul>
-          <ul>
-          <li><b>Job Bank Application - Software Architect</b></li>
-          <li>I developed a dynamic job bank application using HTML, CSS, JSP, Servlets, and MySQL, following the microservices architecture to ensure modularity and maintainability. The application allows users to 
-            register, search for job listings, and securely manage their profiles. I deployed the application on Google Cloud Platform (GCP) using the Compute Engine and the Kubernetes Engine to provide scalable cloud hosting, ensuring high availability 
-            and performance. The project is hosted on Apache Tomcat and integrated with a MySQL database to handle user authentication, job postings, and data persistence. This demonstrates my ability to build scalable, full-stack 
-            web applications while leveraging industry-standard technologies and best practices.</li>
-          </ul>
-        </div>
-      </div>
+          <h2>Notable Projects I</h2>
+          
+          <div className="project-entry">
+            <h3>Cloud-Native Chat Application | <i>AWS (ECS, CodeDeploy), Docker, React</i></h3>
+            <ul>
+              <li>Developed a real-time messaging platform, containerizing backend services with <b>Docker</b> and managing images via <b>Amazon ECR</b>.</li>
+              <li>Orchestrated scalable production deployments using <b>Amazon ECS</b> and implemented automated scaling policies.</li>
+              <li>Built a fully automated CI/CD pipeline using <b>AWS CodeDeploy</b> for zero-downtime updates.</li>
+            </ul>
+          </div>
+            <br />
 
-      <div
+          <div className="project-entry">
+            <h3>Portify (Open Source) | <i>React.js, Node.js, TypeScript, PostgreSQL</i></h3>
+            <ul>
+              <li>Developing an open-source portfolio generation platform leveraging AI-assisted coding tools.</li>
+              <li>Engineered a normalized <b>PostgreSQL</b> schema to handle complex relationships and built a secure RESTful API with Node.js.</li>
+            </ul>
+            <p className="project-link">
+              <a href="https://github.com/OmBalar/Portify" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+            </p>
+          </div>
+          </div>
+          </div>
+          <div
         className="resume-container"
         id="projects"
       >
         <div className="resume-section">
-          <h2>Projects II</h2>
-          <ul>
-            <li><b>Bank Account Application - Software Engineer</b></li>
-            <li>I developed a bank account management system using Java and JavaFX for the graphical user interface. The application allows customers to log in, make deposits, withdraw funds, check balances, and make tiered online purchases based on account levels. I applied object-oriented design principles and used key concepts such as State Design Pattern, Singleton Pattern, and UML diagrams to model the system’s architecture. This project strengthened my skills in developing Java-based applications, working with GUI design, and applying design patterns to manage dynamic behavior. View the code for this project on my <a href="https://github.com/OmBalar/Bank-Application" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
-          </ul>
-          <ul>
-            <li><b>Implementation of Gradient Descent for Regression Models - Machine Learning Engineer</b></li>
-            <li>I implemented Linear and Logistic Regression algorithms from scratch using Python, focusing on Gradient Descent optimization. For Linear Regression, I predicted student final marks from midterm scores by standardizing data, calculating cost functions, and iteratively updating parameters (slope, intercept). I visualized regression lines and error reduction across iterations, comparing results with and without feature standardization to demonstrate its impact on model convergence. In Logistic Regression, I classified coronary heart disease risk through EDA, one-hot encoding categorical variables, and standardizing features. I defined a sigmoid hypothesis, implemented batch/mini-batch Gradient Descent, and analyzed learning curves to optimize binary cross-entropy loss. Results were validated against Python’s LogisticRegression library. Using NumPy, Pandas, and Matplotlib, I reinforced skills in data preprocessing, algorithm mechanics, hyperparameter tuning, and visualization, highlighting the critical role of standardization and iterative optimization in model performance.</li>
-          </ul>
-        </div>
-      </div>
+          <h2>Notable Projects II</h2>
 
-      <div
-        className="resume-container"
-        id="projects"
-      >
-        <div className="resume-section">
-          <h2>Projects III</h2>
-          <ul>
-            <li><b>Payroll Management DBMS - Database Designer</b></li>
-            <li>In this team project, I co-developed a Payroll Management DBMS using JavaFX for the frontend and Oracle SQL for the backend. I contributed to designing entities (employees, payroll, taxes) and relationships, normalized the schema to 3NF/BCNF, and built SQL queries for payroll processing and report generation. The JavaFX GUI streamlined tasks like salary calculations, deductions, and data visualization, while Unix shell scripts automated backend operations. Collaborating via Git, we delivered a user-friendly system that demonstrated proficiency in database design, full-stack integration, and team-based software development.</li>
-          </ul>
-          <ul>
-            <li><b>Robot Guidance - Embedded Systems Engineer</b></li>
-            <li>In this team project, we programmed an autonomous robot using assembly language to navigate and solve a maze, demonstrating adaptive learning by backtracking from dead ends and updating its path decisions. Collaboratively, we designed motor control logic for precise turns, and debugged timing/state issues using breakpoints and LCD instrumentation. The robot successfully learned optimal routes, highlighting teamwork in low-level programming and embedded systems problem-solving. The code for this project is available on my <a href="https://github.com/OmBalar/Robot-Guidance" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
-          </ul>
-          <ul>
-            <li><b>Data Analysis in C - Data Analyst</b></li>
-            <li>Worked with a team to analyze real data collected by Statistics Canada about the prevalence of diabetes in
-Canada. Used C to perform all computations and used Gnuplot to plot the data to show a visual representation that can
-help further analyze the data. The code for this project is on my <a href="https://github.com/OmBalar/Data-Analysis" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
-          </ul>
+          <div className="project-entry">
+            <h3>Robot Guidance System | <i>Assembly, Embedded Systems</i></h3>
+            <ul>
+              <li>Programmed an autonomous robot in <b>Assembly</b> to navigate mazes, demonstrating adaptive learning by backtracking from dead ends.</li>
+              <li>Designed motor control logic for precise turns and debugged timing states using LCD instrumentation.</li>
+            </ul>
+            <p className="project-link">
+              <a href="https://github.com/OmBalar/Robot-Guidance" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+            </p>
+          </div>
+            <br />
+
+          <div className="project-entry">
+            <h3>ML Gradient Descent Implementation | <i>Python, NumPy, Matplotlib</i></h3>
+            <ul>
+              <li>Implemented Linear and Logistic Regression algorithms from scratch to predict student marks and classify heart disease risk.</li>
+              <li>Visualized regression lines and error reduction across iterations to demonstrate the impact of feature standardization.</li>
+            </ul>
+          </div>
+            <br />
+
+          <div className="project-entry">
+            <h3>Job Bank Application | <i>Java Servlets, MySQL, GCP</i></h3>
+            <ul>
+              <li>Developed a dynamic job bank using the microservices architecture, deployed on <b>Google Cloud Platform (GCP)</b>.</li>
+              <li>Integrated MySQL for data persistence and Apache Tomcat for hosting.</li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -325,34 +351,14 @@ help further analyze the data. The code for this project is on my <a href="https
         id="extracurricular"
       >
         <div className="resume-section">
-          <h2>Extra-curricular</h2>
+          <h2>Extra-Curricular</h2>
           <ul>
-            <li><b>Programming Club - Executive Member</b></li>
-            <li>Collaborated with fellow executives to manage the programming club at Northview Heights S.S. Delivered engaging presentations on algorithm design and efficiency, equipping members with the knowledge
-and skills needed for an upcoming programming competition.</li>
-          </ul>
-          <ul>
-            <li><b>Metropolitan Data Science Association - Member</b></li>
-            <li>Enhanced data analysis skills in Python, R, and SQL through a comprehensive data science program, which
-            featured a series of weekly challenges and culminated in a final project completed in December 2023.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        ref={sectionRefs.current.relevantcourses}
-        className="resume-container"
-        id="relevantcourses"
-      >
-        <div className="resume-section">
-          <h2>Relevant Coursework</h2>
-          <ul>
-            <li><b>Algorithms and Data Structures:</b> Developed the ability to analyze the time and memory efficiency of algorithms and explored their implementation in C using various data structures.</li>
-            <li><b>Software Systems:</b> Gained insights into the software development cycle, including requirements analysis, implementation, and testing, along with inspection and debugging techniques.</li>
-            <li><b>Database Systems I:</b> Explored advanced file management techniques, focusing on database organization, design, and management. Emphasized Relational Database Management Systems (RDBMS), including relational algebra, normal forms, physical database structures, and relational database languages.</li>
-            <li><b>Object-Oriented Engineering Analysis and Design:</b> Developed expertise in analyzing, designing, implementing, and testing industrial-quality, reusable software systems. Created a GUI for a bank using JavaFX.</li>
-            <li><b>Software Design Architecture:</b> Covered techniques, strategies, and representations for implementing software systems, with a focus on system-level software design, large architectural models for System-On-Chip (SoC) systems, Electronic-Design-Automation (EDA) tool flows, and embedded systems development.</li>
-            <li><b>Software Requirements Analysis and SPEC:</b> Learned about the requirement definition phase of the software development cycle and practiced creating appropriate descriptions of a desired system.</li>
+            <li>
+                <b>Metropolitan Data Science Association - Member:</b> Enhanced data analysis skills in Python and R through weekly challenges and a final capstone project.
+            </li>
+            <li>
+                <b>Programming Club - Executive Member:</b> Collaborated to manage the club and delivered presentations on algorithm design to prepare members for competitions.
+            </li>
           </ul>
         </div>
       </div>
@@ -367,16 +373,16 @@ and skills needed for an upcoming programming competition.</li>
           <ul>
             <li>Looking to hire a Software Engineer for a Summer 2026 co-op?</li>
             <li>Please reach out to me below!</li>
-            <li>
+            <li className="contact-icons-row">
               <a
-                href="https://www.linkedin.com/in/ombalar/"
+                href="https://www.linkedin.com/in/om-balar-b06b7a250/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="icon-link-bottom"
               >
                 <LinkedInIcon fontSize="large" />
               </a>
-              <a href="mailto:om.balar2@gmail.com" className="icon-link-bottom">
+              <a href="mailto:om.balar@torontomu.com" className="icon-link-bottom">
                 <EmailIcon fontSize="large" />
               </a>
               <a
@@ -397,4 +403,3 @@ and skills needed for an upcoming programming competition.</li>
 }
 
 export default App;
-
