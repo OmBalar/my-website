@@ -264,9 +264,12 @@ This experience has given me the opportunity to work on real-world production sy
         <div className="resume-section">
           <h2>Projects I</h2>
           <ul>
-          <li><b>EdTech - Software Engineer</b></li>
-          <li>This project challenges the idea that effective AI requires massive cloud infrastructure. I built a privacy-first study assistant that runs entirely on-device, bridging a native Swift interface with a highly optimized Python backend. By fine-tuning a 0.5B parameter Small Language Model (SLM) on university-level academic data, I achieved the reasoning capabilities of much larger models while keeping the total memory footprint under 500MB. The result is a tool that transcribes lectures and generates interactive quizzes in real-time—zero latency, zero data leaks, and zero cloud bills.</li>
-          </ul>
+          <li>
+  <b>Omello - Creator & Software Engineer</b>
+</li>
+<li>
+  Architected and launched <a href="https://ombalar.github.io/Omello/#/" target="_blank" rel="noopener noreferrer">Omello</a>, a native macOS application that transforms passive audio lectures into real-time, active-learning quizzes. Designed a complex hybrid AI processing pipeline by bridging a Swift frontend with a bundled FastAPI Python backend. Engineered the system to support privacy-first, on-device inference using a highly optimized 0.5B parameter Small Language Model (SLM) with a sub-500MB memory footprint, as well as scalable cloud inference via user-provided API integrations. Demonstrated strong system design principles by balancing latency, strict local memory constraints, and user privacy without relying on expensive cloud infrastructure.
+</li></ul>
           <ul>
             <li><b>Portify - Full Stack Developer</b></li>
             <li>Independently developing an open-source web application that allows users to neatly store projects and create
