@@ -1,427 +1,761 @@
-import React, { useEffect, useRef, useState } from "react";
-import Grid from '@mui/material/Grid2';
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import EmailIcon from "@mui/icons-material/Email";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import "./App.css";
+import SkillGraph from "./SkillGraph";
+import {
+  heroRoles,
+  about,
+  stats,
+  experience,
+  flagshipProject,
+  featuredProjects,
+  projects,
+  skills,
+  education,
+  links,
+} from "./data";
 
-const menuItems = {
-  home: 0,
-  objective: null,
-  education: null,
-  programmingskills: null,
-}
+/* ---------- Hooks ---------- */
 
-function App() {
-  const sectionRefs = useRef({
-    home: React.createRef(),
-    objective: React.createRef(),
-    education: React.createRef(),
-    programmingskills: React.createRef(),
-    experience: React.createRef(),
-    projects: React.createRef(),
-    extracurricular: React.createRef(),
-    relevantcourses: React.createRef(),
-    connect: React.createRef(),
-  });
-
-  const [currentSection, setCurrentSection] = useState("home");
+function useTypewriter(words, typeSpeed = 80, deleteSpeed = 40, pause = 2000) {
+  const [text, setText] = useState("");
+  const [wordIndex, setWordIndex] = useState(0);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const observerOptions = {
-      root: null, // Use the viewport as the root
-      rootMargin: "-100px", // Trigger when 100px before entering the viewport
-      threshold: 0.25, // Trigger when 25% of the section is in view
+    const word = words[wordIndex % words.length];
+    let timeout;
+
+    if (!deleting && text === word) {
+      timeout = setTimeout(() => setDeleting(true), pause);
+    } else if (deleting && text === "") {
+      setDeleting(false);
+      setWordIndex((i) => (i + 1) % words.length);
+    } else {
+      timeout = setTimeout(
+        () => {
+          setText(deleting ? word.slice(0, text.length - 1) : word.slice(0, text.length + 1));
+        },
+        deleting ? deleteSpeed : typeSpeed
+      );
+    }
+    return () => clearTimeout(timeout);
+  }, [text, deleting, wordIndex, words, typeSpeed, deleteSpeed, pause]);
+
+  return text;
+}
+
+function useReveal() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+}
+
+function useCountUp(target, duration = 1600, start = false, decimals = 0) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let raf;
+    const t0 = performance.now();
+    const factor = Math.pow(10, decimals);
+    const tick = (now) => {
+      const progress = Math.min((now - t0) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * target * factor) / factor);
+      if (progress < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration, start, decimals]);
+  return value;
+}
+
+/* ---------- Particle background ---------- */
+
+function ParticleField() {
+  const canvasRef = useRef(null);
+  const mouse = useRef({ x: null, y: null });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    let particles = [];
+    let raf;
+    let w, h;
+
+    const resize = () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      const count = Math.min(Math.floor((w * h) / 16000), 110);
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 1.6 + 0.6,
+      }));
     };
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const sectionId = entry.target.id;
-          //window.location.hash = `#${sectionId}`; // Update the URL hash when the section is in view
-          setCurrentSection(sectionId);
+    const onMove = (e) => {
+      mouse.current = { x: e.clientX, y: e.clientY };
+    };
+    const onLeave = () => {
+      mouse.current = { x: null, y: null };
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      const LINK = 130;
+      const m = mouse.current;
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+
+        // gentle attraction toward cursor
+        if (m.x !== null) {
+          const dx = m.x - p.x;
+          const dy = m.y - p.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 200 && dist > 0.001) {
+            p.x += (dx / dist) * 0.25;
+            p.y += (dy / dist) * 0.25;
+          }
         }
-      });
-    }, observerOptions);
 
-    // Observe each section
-    Object.values(sectionRefs.current).forEach((sectionRef) => {
-      observer.observe(sectionRef.current);
-    });
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(125, 211, 252, 0.55)";
+        ctx.fill();
+      }
 
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const a = particles[i];
+          const b = particles[j];
+          const dist = Math.hypot(a.x - b.x, a.y - b.y);
+          if (dist < LINK) {
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(96, 165, 250, ${0.14 * (1 - dist / LINK)})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+      raf = requestAnimationFrame(draw);
+    };
+
+    resize();
+    draw();
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseleave", onLeave);
     return () => {
-      observer.disconnect(); // Cleanup observer when component unmounts
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseleave", onLeave);
     };
   }, []);
 
-  const scrollToSection = (section) => {
-    const target = sectionRefs.current[section]?.current;
-    if (target) {
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  };
+  return <canvas ref={canvasRef} className="particle-canvas" aria-hidden="true" />;
+}
 
-  const navbarRef = useRef(null);
-  const overlayRef = useRef(null);
+/* ---------- Small components ---------- */
 
-  function openSidebar() {
-    const navbar = document.getElementById("navbar");
-    const openButton = document.getElementById("open-sidebar-button");
-  
-    navbar.classList.add("show");
-    openButton.setAttribute("aria-expanded", "true");
-    openButton.style.display = "none"; // Hide the button
-  }
-  
-  function closeSidebar() {
-    const navbar = document.getElementById("navbar");
-    const openButton = document.getElementById("open-sidebar-button");
-  
-    navbar.classList.remove("show");
-    openButton.setAttribute("aria-expanded", "false");
-    openButton.style.display = "block"; // Show the button again
-  }
+function ScrollProgress() {
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(total > 0 ? (window.scrollY / total) * 100 : 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return <div className="scroll-progress" style={{ width: `${progress}%` }} />;
+}
 
-  const removeOutline = (event) => {
-    event.target.blur();
-  };
+function StatCard({ stat, started }) {
+  const decimals = stat.decimals || 0;
+  const animated = useCountUp(stat.value, 1600, started, decimals);
+  return (
+    <div className="stat-card">
+      <span className="stat-value">
+        {animated.toFixed(decimals)}
+        <span className="stat-suffix">{stat.suffix}</span>
+      </span>
+      <span className="stat-label">{stat.label}</span>
+    </div>
+  );
+}
 
-  const createNavItem = (scrollToSection, label, href, currentSection, setCurrentSection) => {
-    return (
-      <li>
-        <a
-          href={href}
-          className={currentSection === (href == "#home" ? "" : href.replace("#", "")) ? "active-link" : ""}
-          onClick={(e) => {
-            e.preventDefault(); // Prevent default anchor behavior
-            window.location.hash = `${href}`;
-            scrollToSection(href.replace("#", "")); // Scroll to the section
-            setCurrentSection(href.replace("#", "")); // Update the current section
-            removeOutline(e); // Remove focus outline after clicking
-          }}
-        >
-          {label}
-        </a>
-      </li>
+function Stats() {
+  const ref = useRef(null);
+  const [started, setStarted] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 }
     );
-  };
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <div className="stats-grid reveal" ref={ref}>
+      {stats.map((s) => (
+        <StatCard key={s.label} stat={s} started={started} />
+      ))}
+    </div>
+  );
+}
 
+function TiltCard({ children, className, id }) {
+  const ref = useRef(null);
+  const onMove = useCallback((e) => {
+    const el = ref.current;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `perspective(900px) rotateY(${px * 6}deg) rotateX(${-py * 6}deg) translateY(-4px)`;
+    el.style.setProperty("--glow-x", `${(px + 0.5) * 100}%`);
+    el.style.setProperty("--glow-y", `${(py + 0.5) * 100}%`);
+  }, []);
+  const onLeave = useCallback(() => {
+    ref.current.style.transform = "";
+  }, []);
+  return (
+    <div ref={ref} id={id} className={className} onMouseMove={onMove} onMouseLeave={onLeave}>
+      {children}
+    </div>
+  );
+}
+
+function ScreenshotCarousel({ screenshots }) {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    if (paused) return;
+    const timer = setInterval(() => {
+      setIndex((i) => (i + 1) % screenshots.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [paused, screenshots.length]);
 
   return (
-    <div className="App">
-      <button
-        id="open-sidebar-button"
-        aria-label="open sidebar"
-        aria-expanded="false"
-        aria-controls="navbar"
-        onClick={openSidebar}
+    <div
+      className="carousel"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="carousel-frame">
+        {screenshots.map((shot, i) => (
+          <img
+            key={shot.caption}
+            src={shot.src}
+            alt={shot.caption}
+            className={`carousel-img ${i === index ? "visible" : ""}`}
+            loading={i === 0 ? "eager" : "lazy"}
+          />
+        ))}
+      </div>
+      <p className="carousel-caption">{screenshots[index].caption}</p>
+      <div className="carousel-dots">
+        {screenshots.map((shot, i) => (
+          <button
+            key={shot.caption}
+            className={`carousel-dot ${i === index ? "active" : ""}`}
+            aria-label={`Show screenshot ${i + 1}`}
+            onClick={() => setIndex(i)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Sections ---------- */
+
+const NAV_SECTIONS = [
+  { id: "about", label: "About" },
+  { id: "experience", label: "Experience" },
+  { id: "projects", label: "Projects" },
+  { id: "skills", label: "Skills" },
+  { id: "education", label: "Education" },
+  { id: "contact", label: "Contact" },
+];
+
+function Navbar() {
+  const [active, setActive] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      let current = "";
+      for (const { id } of NAV_SECTIONS) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top < window.innerHeight * 0.4) {
+          current = id;
+        }
+      }
+      setActive(current);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const go = (e, id) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <header className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
+      <a
+        href="#top"
+        className="nav-logo"
+        onClick={(e) => {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          setMenuOpen(false);
+        }}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000">
-          <path d="M165.13-254.62q-10.68 0-17.9-7.26-7.23-7.26-7.23-18t7.23-17.86q7.22-7.13 17.9-7.13h629.74q10.68 0 17.9 7.26 7.23 7.26 7.23 18t-7.23 17.87q-7.22 7.12-17.9 7.12H165.13Zm0-200.25q-10.68 0-17.9-7.27-7.23-7.26-7.23-17.99 0-10.74 7.23-17.87 7.22-7.13 17.9-7.13h629.74q10.68 0 17.9 7.27 7.23 7.26 7.23 17.99 0 10.74-7.23 17.87-7.22 7.13-17.9 7.13H165.13Zm0-200.26q-10.68 0-17.9-7.26-7.23-7.26-7.23-18t7.23-17.87q7.22-7.12 17.9-7.12h629.74q10.68 0 17.9 7.26 7.23 7.26 7.23 18t-7.23 17.86q-7.22 7.13-17.9 7.13H165.13Z" />
-        </svg>
-      </button>
-
-      {/* Sidebar Navigation */}
-      <nav id="navbar" ref={navbarRef} className="sidebar">
-        <ul>
-          <li>
-            <button
-              id="close-sidebar-button"
-              aria-label="close sidebar"
-              onClick={closeSidebar}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000">
-                <path d="m480-444.62-209.69 209.7q-7.23 7.23-17.5 7.42-10.27.19-17.89-7.42-7.61-7.62-7.61-17.7 0-10.07 7.61-17.69L444.62-480l-209.7-209.69q-7.23-7.23-7.42-17.5-.19-10.27 7.42-17.89 7.62-7.61 17.7-7.61 10.07 0 17.69 7.61L480-515.38l209.69-209.7q7.23-7.23 17.5-7.42 10.27-.19 17.89 7.42 7.61 7.62 7.61 17.7 0 10.07-7.61 17.69L515.38-480l209.7 209.69q7.23 7.23 7.42 17.5.19 10.27-7.42 17.89-7.62 7.61-17.7 7.61-10.07 0-17.69-7.61L480-444.62Z" />
-              </svg>
-            </button>
-          </li>
-          {createNavItem(scrollToSection, "Home", "#home", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Objective", "#objective", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Education", "#education", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Programming Skills", "#programmingskills", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Work Experience", "#experience", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Projects", "#projects", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Extra-Curricular", "#extracurricular", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Coursework", "#relevantcourses", currentSection, setCurrentSection)}
-          {createNavItem(scrollToSection, "Contact Me", "#connect", currentSection, setCurrentSection)}
-        </ul>
-      </nav>
-
-      {/* Overlay */}
-      <div id="overlay" ref={overlayRef} onClick={closeSidebar} aria-hidden="true"></div>
-
-      <div className="left-icons">
+        <span className="logo-bracket">&lt;</span>OB<span className="logo-bracket">/&gt;</span>
+      </a>
+      <nav className={`nav-links ${menuOpen ? "open" : ""}`}>
+        {NAV_SECTIONS.map(({ id, label }, i) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            className={active === id ? "active" : ""}
+            onClick={(e) => go(e, id)}
+          >
+            <span className="nav-index">0{i + 1}.</span> {label}
+          </a>
+        ))}
         <a
-          href="https://www.linkedin.com/in/ombalar/"
+          className="nav-cta"
+          href={links.resume}
           target="_blank"
           rel="noopener noreferrer"
-          className="icon-link"
         >
+          Resume
+        </a>
+        <a className="nav-cta nav-cta-solid" href={`mailto:${links.email}`}>
+          Hire Me
+        </a>
+      </nav>
+      <button
+        className={`hamburger ${menuOpen ? "open" : ""}`}
+        aria-label="Toggle menu"
+        aria-expanded={menuOpen}
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+    </header>
+  );
+}
+
+function Hero() {
+  const typed = useTypewriter(heroRoles);
+  return (
+    <section className="hero" id="top">
+      <div className="hero-content">
+        <p className="hero-eyebrow">Hi, my name is</p>
+        <h1 className="hero-name">Om Balar<span className="accent-dot">.</span></h1>
+        <h2 className="hero-typed">
+          {typed}
+          <span className="cursor-blink">|</span>
+        </h2>
+        <p className="hero-sub">
+          Computer Engineering student at Toronto Metropolitan University with{" "}
+          <strong>20 months</strong> of experience shipping production software.
+          <br />
+          Seeking <strong>New Grad Software Engineering</strong> roles for <strong>2027</strong>.
+        </p>
+        <div className="hero-actions">
+          <a
+            className="btn btn-primary"
+            href="#projects"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            View My Work
+          </a>
+          <a className="btn btn-ghost" href={`mailto:${links.email}`}>
+            Get In Touch
+          </a>
+        </div>
+        <div className="hero-terminal reveal revealed">
+          <div className="terminal-bar">
+            <span className="dot red" />
+            <span className="dot yellow" />
+            <span className="dot green" />
+            <span className="terminal-title">om@portfolio: zsh</span>
+          </div>
+          <div className="terminal-body">
+            <p>
+              <span className="prompt">$</span> whoami
+            </p>
+            <p className="terminal-out">engineer · builder · lifelong learner</p>
+            <p>
+              <span className="prompt">$</span> gpa --cumulative
+            </p>
+            <p className="terminal-out">4.29 / 4.33 (Dean's List)</p>
+            <p>
+              <span className="prompt">$</span> status --availability
+            </p>
+            <p className="terminal-out terminal-green">● open to New Grad SWE roles for Summer 2027</p>
+          </div>
+        </div>
+      </div>
+      <a
+        className="scroll-hint"
+        href="#about"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
+        }}
+        aria-label="Scroll to about section"
+      >
+        <span className="mouse-icon">
+          <span className="mouse-wheel" />
+        </span>
+      </a>
+    </section>
+  );
+}
+
+function SectionHeading({ index, title }) {
+  return (
+    <h2 className="section-heading reveal">
+      <span className="section-index">{index}.</span> {title}
+      <span className="heading-line" />
+    </h2>
+  );
+}
+
+function About() {
+  return (
+    <section id="about" className="section">
+      <SectionHeading index="01" title="About Me" />
+      <div className="about-grid">
+        <div className="about-text reveal">
+          <p>{about.intro}</p>
+          <p>{about.focus}</p>
+          <p className="about-seeking">{about.seeking}</p>
+        </div>
+        <Stats />
+      </div>
+    </section>
+  );
+}
+
+function Experience() {
+  return (
+    <section id="experience" className="section">
+      <SectionHeading index="02" title="Where I've Worked" />
+      <div className="timeline">
+        {experience.map((job) => (
+          <div className="timeline-item reveal" key={job.company + job.period} id={job.slug}>
+            <div className="timeline-marker" />
+            <div className="timeline-card">
+              <div className="timeline-header">
+                <div>
+                  <h3>
+                    {job.role} <span className="at-company">@ {job.company}</span>
+                  </h3>
+                  <p className="timeline-period">
+                    {job.period} <span className="period-tag">{job.tag}</span>
+                  </p>
+                </div>
+              </div>
+              <ul className="timeline-points">
+                {job.points.map((point, i) => (
+                  <li key={i}>{point}</li>
+                ))}
+              </ul>
+              <div className="tech-tags">
+                {job.tech.map((t) => (
+                  <span className="tech-tag" key={t}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Projects() {
+  return (
+    <section id="projects" className="section">
+      <SectionHeading index="03" title="Things I've Built" />
+
+      <div className="flagship-card reveal" id={flagshipProject.slug}>
+        <div className="flagship-text">
+          <div className="featured-label">Flagship Project</div>
+          <div className="featured-top">
+            <h3>{flagshipProject.title}</h3>
+            <a
+              href={flagshipProject.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="project-link"
+            >
+              {flagshipProject.linkLabel} <ArrowOutwardIcon fontSize="small" />
+            </a>
+          </div>
+          <p className="featured-subtitle">{flagshipProject.subtitle}</p>
+          <p className="featured-desc">{flagshipProject.description}</p>
+          <div className="flagship-highlights">
+            {flagshipProject.highlights.map((h) => (
+              <span className="featured-highlight" key={h}>
+                {h}
+              </span>
+            ))}
+          </div>
+          <div className="tech-tags">
+            {flagshipProject.tech.map((t) => (
+              <span className="tech-tag" key={t}>
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+        <ScreenshotCarousel screenshots={flagshipProject.screenshots} />
+      </div>
+
+      <div className="featured-projects">
+        {featuredProjects.map((p) => (
+          <TiltCard className="featured-card reveal" key={p.title} id={p.slug}>
+            <div className="featured-label">Featured Project</div>
+            <div className="featured-top">
+              <h3>{p.title}</h3>
+              {p.link && (
+                <a href={p.link} target="_blank" rel="noopener noreferrer" className="project-link">
+                  {p.linkLabel} <ArrowOutwardIcon fontSize="small" />
+                </a>
+              )}
+            </div>
+            <p className="featured-subtitle">{p.subtitle}</p>
+            <p className="featured-desc">{p.description}</p>
+            <p className="featured-highlight">{p.highlight}</p>
+            <div className="tech-tags">
+              {p.tech.map((t) => (
+                <span className="tech-tag" key={t}>
+                  {t}
+                </span>
+              ))}
+            </div>
+          </TiltCard>
+        ))}
+      </div>
+
+      <div className="project-grid">
+        {projects.map((p) => (
+          <TiltCard className="project-card reveal" key={p.title} id={p.slug}>
+            <div className="project-card-top">
+              <h4>{p.title}</h4>
+              {p.link && (
+                <a
+                  href={p.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${p.title} on GitHub`}
+                  className="project-gh"
+                >
+                  <GitHubIcon fontSize="small" />
+                </a>
+              )}
+            </div>
+            <p>{p.description}</p>
+            <div className="tech-tags">
+              {p.tech.map((t) => (
+                <span className="tech-tag" key={t}>
+                  {t}
+                </span>
+              ))}
+            </div>
+          </TiltCard>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Skills() {
+  return (
+    <section id="skills" className="section">
+      <SectionHeading index="04" title="Skills & Technologies" />
+      <SkillGraph />
+      <details className="skills-details reveal">
+        <summary>View the full list</summary>
+        <div className="skills-grid">
+          {skills.map((group) => (
+            <div className="skill-group" key={group.category}>
+              <h4>{group.category}</h4>
+              <div className="tech-tags">
+                {group.items.map((item) => (
+                  <span className="tech-tag skill-tag" key={item}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </details>
+    </section>
+  );
+}
+
+function Education() {
+  return (
+    <section id="education" className="section">
+      <SectionHeading index="05" title="Education" />
+      <div className="education-card reveal" id="education-card">
+        <div className="education-main">
+          <h3>{education.degree}</h3>
+          <p className="education-specialization">{education.specialization}</p>
+          <p className="education-school">{education.school}</p>
+          <p className="timeline-period">{education.period}</p>
+          <p className="gpa-badge">{education.gpa}</p>
+        </div>
+        <div className="education-detail">
+          <h4>Honors & Awards</h4>
+          <ul className="honors-list">
+            {education.honors.map((h) => (
+              <li key={h}>{h}</li>
+            ))}
+          </ul>
+          <h4 className="activities-heading">Relevant Coursework</h4>
+          <div className="tech-tags">
+            {education.coursework.map((c) => (
+              <span className="tech-tag" key={c}>
+                {c}
+              </span>
+            ))}
+          </div>
+          <h4 className="activities-heading">Beyond the Classroom</h4>
+          {education.activities.map((a) => (
+            <p className="activity" key={a.title}>
+              <strong>{a.title}</strong>: {a.detail}
+            </p>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Contact() {
+  return (
+    <section id="contact" className="section contact-section">
+      <p className="contact-eyebrow reveal">06. What's Next?</p>
+      <h2 className="contact-title reveal">Let's Build Something Together</h2>
+      <p className="contact-text reveal">
+        I'm looking for a New Grad Software Engineering role starting Summer 2027: a team
+        where I can ship meaningful software and keep growing as an engineer. If you think
+        I'd be a good fit, my inbox is always open.
+      </p>
+      <a className="btn btn-primary btn-large reveal" href={`mailto:${links.email}`}>
+        Say Hello
+      </a>
+      <div className="contact-icons reveal">
+        <a href={links.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
           <LinkedInIcon fontSize="large" />
         </a>
-        <a href="mailto:om.balar2@gmail.com" className="icon-link">
+        <a href={links.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <GitHubIcon fontSize="large" />
+        </a>
+        <a href={`mailto:${links.email}`} aria-label="Email">
           <EmailIcon fontSize="large" />
         </a>
       </div>
+      <footer className="footer">
+        <p>Designed & built by Om Balar</p>
+      </footer>
+    </section>
+  );
+}
 
-      <div ref={sectionRefs.current.home} className="hero">
-        <h1 className="intro">
-          Hello,
-          <br />
-          my name is
-        </h1>
-        <h1 className="name">Om Balar</h1>
-        <button
-          className="scroll-button"
-          onClick={() => scrollToSection("objective")}
-        >
-          ↓ Scroll Down to Learn More About Me
-        </button>
-      </div>
+/* ---------- App ---------- */
 
-      <div style={{ height: "30vh" }}></div>
-
-      <Grid container spacing={{xs:80, md:10}}>
-      <div
-        ref={sectionRefs.current.objective}
-        className="resume-container"
-        id="objective"
-      >
-        <div className="resume-section">
-          <h2>Objective</h2>
-          <p>As a motivated fifth-year Computer Engineering student, I am eager to apply my skills in software engineering, problem-solving, and optimization to tackle complex challenges. With experience in programming languages like Python and Java, and technologies such as React.js and AngularJS, I am excited to contribute to innovative and efficient solutions. I aim to grow as an engineer and make meaningful contributions to a forward-thinking company.</p>
-        </div>
-      </div>
-
-      <div
-        ref={sectionRefs.current.education}
-        className="resume-container"
-        id="education"
-      >
-        <div className="resume-section">
-          <h2>Education</h2>
-          <ul>
-            <li>Bachelor of Engineering - Computer Engineering, Toronto Metropolitan University [2022-2027]</li>
-            <li>Ontario Secondary School Diploma - Northview Heights Secondary School [2018-2022]</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        ref={sectionRefs.current.programmingskills}
-        className="resume-container"
-        id="programmingskills"
-      >
-        <div className="resume-section">
-          <h2>Programming Skills</h2>
-          <ul>
-            <li><b>Languages:</b> Java, Python, TypeScript, JavaScript, Swift, C, SQL, HTML, CSS</li>
-            <li><b>Frameworks & Databases:</b> AngularJS, React.js, Next.js, Node.js, Spring, PostgreSQL, MongoDB</li>
-            <li><b>AI & ML:</b> Claude, PyTorch, LLMs, RAG Architectures, Vertex AI, Google Cloud APIs</li>
-            <li><b>Infrastructure & Cloud:</b> GCP, AWS, Docker, Kubernetes, Linux</li>
-            <li><b>Tools & Methodologies:</b> AI-Assisted Coding (Claude Code, Cursor), Git, CI/CD, Automated Testing, System Design</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        ref={sectionRefs.current.experience}
-        className="resume-container"
-        id="experience"
-      >
-        <div className="resume-section">
-          <h2>Work Experience I</h2>
-          <ul>
-            <li><b>Software Developer, Environment and Climate Change Canada [May 2025-August 2026]</b></li>
-            <li>During my 16-month co-op, I worked within an Agile team to develop and optimize a full-stack internal web application used by meteorologists. I engineered a content management feature using AngularJS and Java to streamline description updates, and architected a custom JSON caching system that significantly reduced data retrieval times by bypassing inefficient SQL queries on massive datasets. Additionally, I spearheaded a large-scale codebase refactoring initiative by updating ESLint for a legacy TypeScript frontend to catch compile-time bugs. Throughout the development lifecycle, I designed system architectures with UML diagrams and ensured software reliability by writing automated UI tests to verify non-breaking changes in a production environment.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        className="resume-container"
-        id="experience"
-      >
-        <div className="resume-section">
-          <h2>Work Experience II</h2>
-          <ul>
-            <li><b>AI Trainer, DataAnnotation [June 2026]</b></li>
-            <li>In this role, I evaluated and refined the code generation capabilities of large language models by conducting rigorous agentic coding assessments and debugging complex outputs. My work involved designing and testing Dockerfiles and containerized environments to ensure AI-generated code executed reliably across various system architectures. By performing comprehensive data analysis and assessing model logic, I provided structured technical feedback that directly improved the accuracy and algorithmic problem-solving performance of these advanced AI systems.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        className="resume-container"
-        id="experience"
-      >
-        <div className="resume-section">
-          <h2>Work Experience III</h2>
-          <ul>
-            <li><b>Software Engineer, Reviewer.ly [May 2024-August 2024]</b></li>
-            <li>I leveraged front-end and back-end technologies to design and implement full-stack features that improved the user experience of the Reviewer.ly platform. I developed user profile management capabilities utilizing React.js, Next.js, and Spring Boot, and optimized system storage by engineering a dual-layer image compression solution to efficiently process large profile pictures. Furthermore, I built an automated issue-tracking interface integrated with an SMTP service for real-time email notifications, and streamlined backend microservice communication using gRPC and OpenAPI. To prevent regressions and ensure codebase reliability, I also designed and wrote comprehensive automated unit tests using Jest, React Testing Library, and Mockito.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        ref={sectionRefs.current.projects}
-        className="resume-container"
-        id="projects"
-      >
-        <div className="resume-section">
-          <h2>Projects I</h2>
-          <ul>
-          <li>
-  <b>Omello - Creator & Software Engineer</b>
-</li>
-<li>
-  Architected and launched <a href="https://ombalar.github.io/Omello/#/" target="_blank" rel="noopener noreferrer">Omello</a>, a native macOS application that transforms passive audio lectures into real-time, active-learning quizzes. Designed a complex hybrid AI processing pipeline by bridging a Swift frontend with a bundled FastAPI Python backend. Engineered the system to support privacy-first, on-device inference using a highly optimized 0.5B parameter Small Language Model (SLM) with a sub-500MB memory footprint, as well as scalable cloud inference via user-provided API integrations. Demonstrated strong system design principles by balancing latency, strict local memory constraints, and user privacy without relying on expensive cloud infrastructure.
-</li></ul>
-          <ul>
-            <li><b>Portify - Full Stack Developer</b></li>
-            <li>Independently developing an open-source web application that allows users to neatly store projects and create
-visually appealing portfolios, enabling them to focus on what matters without worrying about front-end design. Front-end and back-end development use the React.js and Node.js frameworks, respectively. These services
-were created using TypeScript to increase readability and allow for Object-Oriented Programming. Designed and implemented a PostgreSQL database for its reliability, connectivity, speed, and security. You can view the code on my <a href="https://github.com/OmBalar/Portify" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        className="resume-container"
-        id="projects"
-      >
-        <div className="resume-section">
-          <h2>Projects II</h2>
-          <ul>
-          <li><b>Job Bank Application - Software Architect</b></li>
-          <li>I developed a dynamic job bank application using HTML, CSS, JSP, Servlets, and MySQL, following the microservices architecture to ensure modularity and maintainability. The application allows users to 
-            register, search for job listings, and securely manage their profiles. I deployed the application on Google Cloud Platform (GCP) using the Compute Engine and the Kubernetes Engine to provide scalable cloud hosting, ensuring high availability 
-            and performance. The project is hosted on Apache Tomcat and integrated with a MySQL database to handle user authentication, job postings, and data persistence. This demonstrates my ability to build scalable, full-stack 
-            web applications while leveraging industry-standard technologies and best practices.</li>
-          </ul>
-          <ul>
-            <li><b>Bank Account Application - Software Engineer</b></li>
-            <li>I developed a bank account management system using Java and JavaFX for the graphical user interface. The application allows customers to log in, make deposits, withdraw funds, check balances, and make tiered online purchases based on account levels. I applied object-oriented design principles and used key concepts such as State Design Pattern, Singleton Pattern, and UML diagrams to model the system’s architecture. This project strengthened my skills in developing Java-based applications, working with GUI design, and applying design patterns to manage dynamic behavior. View the code for this project on my <a href="https://github.com/OmBalar/Bank-Application" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        className="resume-container"
-        id="projects"
-      >
-        <div className="resume-section">
-          <h2>Projects III</h2>
-          <ul>
-            <li><b>Implementation of Gradient Descent for Regression Models - Machine Learning Engineer</b></li>
-            <li>I implemented Linear and Logistic Regression algorithms from scratch using Python, focusing on Gradient Descent optimization. For Linear Regression, I predicted student final marks from midterm scores by standardizing data, calculating cost functions, and iteratively updating parameters (slope, intercept). I visualized regression lines and error reduction across iterations, comparing results with and without feature standardization to demonstrate its impact on model convergence. In Logistic Regression, I classified coronary heart disease risk through EDA, one-hot encoding categorical variables, and standardizing features. I defined a sigmoid hypothesis, implemented batch/mini-batch Gradient Descent, and analyzed learning curves to optimize binary cross-entropy loss. Results were validated against Python’s LogisticRegression library. Using NumPy, Pandas, and Matplotlib, I reinforced skills in data preprocessing, algorithm mechanics, hyperparameter tuning, and visualization, highlighting the critical role of standardization and iterative optimization in model performance.</li>
-          </ul>
-          <ul>
-            <li><b>Payroll Management DBMS - Database Designer</b></li>
-            <li>In this team project, I co-developed a Payroll Management DBMS using JavaFX for the frontend and Oracle SQL for the backend. I contributed to designing entities (employees, payroll, taxes) and relationships, normalized the schema to 3NF/BCNF, and built SQL queries for payroll processing and report generation. The JavaFX GUI streamlined tasks like salary calculations, deductions, and data visualization, while Unix shell scripts automated backend operations. Collaborating via Git, we delivered a user-friendly system that demonstrated proficiency in database design, full-stack integration, and team-based software development.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        className="resume-container"
-        id="projects"
-      >
-        <div className="resume-section">
-          <h2>Projects IV</h2>
-          <ul>
-            <li><b>Robot Guidance - Embedded Systems Engineer</b></li>
-            <li>In this team project, we programmed an autonomous robot using assembly language to navigate and solve a maze, demonstrating adaptive learning by backtracking from dead ends and updating its path decisions. Collaboratively, we designed motor control logic for precise turns, and debugged timing/state issues using breakpoints and LCD instrumentation. The robot successfully learned optimal routes, highlighting teamwork in low-level programming and embedded systems problem-solving. The code for this project is available on my <a href="https://github.com/OmBalar/Robot-Guidance" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
-          </ul>
-          <ul>
-            <li><b>Data Analysis in C - Data Analyst</b></li>
-            <li>Worked with a team to analyze real data collected by Statistics Canada about the prevalence of diabetes in
-Canada. Used C to perform all computations and used Gnuplot to plot the data to show a visual representation that can
-help further analyze the data. The code for this project is on my <a href="https://github.com/OmBalar/Data-Analysis" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        ref={sectionRefs.current.extracurricular}
-        className="resume-container"
-        id="extracurricular"
-      >
-        <div className="resume-section">
-          <h2>Extra-curricular</h2>
-          <ul>
-            <li><b>Programming Club - Executive Member</b></li>
-            <li>Collaborated with fellow executives to manage the programming club at Northview Heights S.S. Delivered engaging presentations on algorithm design and efficiency, equipping members with the knowledge
-and skills needed for an upcoming programming competition.</li>
-          </ul>
-          <ul>
-            <li><b>Metropolitan Data Science Association - Member</b></li>
-            <li>Enhanced data analysis skills in Python, R, and SQL through a comprehensive data science program, which
-            featured a series of weekly challenges and culminated in a final project completed in December 2023.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        ref={sectionRefs.current.relevantcourses}
-        className="resume-container"
-        id="relevantcourses"
-      >
-        <div className="resume-section">
-          <h2>Relevant Coursework</h2>
-          <ul>
-            <li><b>Algorithms and Data Structures:</b> Developed the ability to analyze the time and memory efficiency of algorithms and explored their implementation in C using various data structures.</li>
-            <li><b>Software Systems:</b> Gained insights into the software development cycle, including requirements analysis, implementation, and testing, along with inspection and debugging techniques.</li>
-            <li><b>Database Systems I:</b> Explored advanced file management techniques, focusing on database organization, design, and management. Emphasized Relational Database Management Systems (RDBMS), including relational algebra, normal forms, physical database structures, and relational database languages.</li>
-            <li><b>Object-Oriented Engineering Analysis and Design:</b> Developed expertise in analyzing, designing, implementing, and testing industrial-quality, reusable software systems. Created a GUI for a bank using JavaFX.</li>
-            <li><b>Software Design Architecture:</b> Covered techniques, strategies, and representations for implementing software systems, with a focus on system-level software design, large architectural models for System-On-Chip (SoC) systems, Electronic-Design-Automation (EDA) tool flows, and embedded systems development.</li>
-            <li><b>Software Requirements Analysis and SPEC:</b> Learned about the requirement definition phase of the software development cycle and practiced creating appropriate descriptions of a desired system.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        ref={sectionRefs.current.connect}
-        className="resume-container"
-        id="connect"
-      >
-        <div className="resume-section">
-          <h2>Looking To Hire?</h2>
-          <ul>
-            <li>Looking to hire a New Grad Software Engineer starting Summer 2027?</li>
-            <li>Please reach out to me below!</li>
-            <li>
-              <a
-                href="https://www.linkedin.com/in/ombalar/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="icon-link-bottom"
-              >
-                <LinkedInIcon fontSize="large" />
-              </a>
-              <a href="mailto:om.balar2@gmail.com" className="icon-link-bottom">
-                <EmailIcon fontSize="large" />
-              </a>
-              <a
-                href="https://github.com/OmBalar"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="icon-link-bottom"
-              >
-                <GitHubIcon fontSize="large" />
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      </Grid>
+function App() {
+  useReveal();
+  return (
+    <div className="App">
+      <ParticleField />
+      <ScrollProgress />
+      <Navbar />
+      <aside className="side-rail left">
+        <a href={links.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <GitHubIcon />
+        </a>
+        <a href={links.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <LinkedInIcon />
+        </a>
+        <a href={`mailto:${links.email}`} aria-label="Email">
+          <EmailIcon />
+        </a>
+        <span className="rail-line" />
+      </aside>
+      <aside className="side-rail right">
+        <a href={`mailto:${links.email}`} className="rail-email">
+          {links.email}
+        </a>
+        <span className="rail-line" />
+      </aside>
+      <main>
+        <Hero />
+        <About />
+        <Experience />
+        <Projects />
+        <Skills />
+        <Education />
+        <Contact />
+      </main>
     </div>
   );
 }
 
 export default App;
-
