@@ -1,15 +1,21 @@
 {
   "files": {
-    "main.css": "/my-website/static/css/main.72de2149.css",
-    "main.js": "/my-website/static/js/main.87a40c0b.js",
+    "main.css": "/my-website/static/css/main.2bca8abf.css",
+    "main.js": "/my-website/static/js/main.57ba294c.js",
     "static/js/488.273886f3.chunk.js": "/my-website/static/js/488.273886f3.chunk.js",
+    "static/media/note-view.png": "/my-website/static/media/note-view.eaf0137916abc32a6570.png",
+    "static/media/transcription.png": "/my-website/static/media/transcription.259c9b612cd89319f2f7.png",
+    "static/media/quizzing.png": "/my-website/static/media/quizzing.cf1397e20d4175af572f.png",
+    "static/media/cram-sheet.png": "/my-website/static/media/cram-sheet.04cadcfea218af3558ec.png",
+    "static/media/exam-mode.png": "/my-website/static/media/exam-mode.dc5217ed17490f44156e.png",
+    "static/media/homepage.png": "/my-website/static/media/homepage.39e3d46e62e08651c126.png",
     "index.html": "/my-website/index.html",
-    "main.72de2149.css.map": "/my-website/static/css/main.72de2149.css.map",
-    "main.87a40c0b.js.map": "/my-website/static/js/main.87a40c0b.js.map",
+    "main.2bca8abf.css.map": "/my-website/static/css/main.2bca8abf.css.map",
+    "main.57ba294c.js.map": "/my-website/static/js/main.57ba294c.js.map",
     "488.273886f3.chunk.js.map": "/my-website/static/js/488.273886f3.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.72de2149.css",
-    "static/js/main.87a40c0b.js"
+    "static/css/main.2bca8abf.css",
+    "static/js/main.57ba294c.js"
   ]
 }
