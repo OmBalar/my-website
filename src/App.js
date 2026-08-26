@@ -192,7 +192,7 @@ function App() {
       >
         <div className="resume-section">
           <h2>Objective</h2>
-          <p>As a motivated fourth-year Computer Engineering student, I am eager to apply my skills in software engineering, problem-solving, and optimization to tackle complex challenges. With experience in programming languages like Python and Java, and technologies such as React.js and Node.js, I am excited to contribute to innovative and efficient solutions. I aim to grow as an engineer and make meaningful contributions to a forward-thinking company.</p>
+          <p>As a motivated fifth-year Computer Engineering student, I am eager to apply my skills in software engineering, problem-solving, and optimization to tackle complex challenges. With experience in programming languages like Python and Java, and technologies such as React.js and AngularJS, I am excited to contribute to innovative and efficient solutions. I aim to grow as an engineer and make meaningful contributions to a forward-thinking company.</p>
         </div>
       </div>
 
@@ -218,9 +218,11 @@ function App() {
         <div className="resume-section">
           <h2>Programming Skills</h2>
           <ul>
-            <li><b>Programming Languages:</b> Python, Java, C, C++, SQL, JavaScript, TypeScript, HTML, CSS, VHDL</li>
-            <li><b>Technologies:</b> Git, Docker, PostgreSQL, MongoDB, MySQL, OpenAPI</li>
-            <li><b>Frameworks:</b> React.js, Node.js, Next.js, Spring, JUnit, Mockito, Jest, JavaFX</li>
+            <li><b>Languages:</b> Java, Python, TypeScript, JavaScript, Swift, C, SQL, HTML, CSS</li>
+            <li><b>Frameworks & Databases:</b> AngularJS, React.js, Next.js, Node.js, Spring, PostgreSQL, MongoDB</li>
+            <li><b>AI & ML:</b> Claude, PyTorch, LLMs, RAG Architectures, Vertex AI, Google Cloud APIs</li>
+            <li><b>Infrastructure & Cloud:</b> GCP, AWS, Docker, Kubernetes, Linux</li>
+            <li><b>Tools & Methodologies:</b> AI-Assisted Coding (Claude Code, Cursor), Git, CI/CD, Automated Testing, System Design</li>
           </ul>
         </div>
       </div>
@@ -233,12 +235,8 @@ function App() {
         <div className="resume-section">
           <h2>Work Experience I</h2>
           <ul>
-            <li><b>Software Developer, Environment and Climate Change Canada [May 2025-Present]</b></li>
-            <li>I am currently a Software Developer Intern at Environment and Climate Change Canada, where I focus on building internal tools that support Canada’s weather and climate services. In this role, I contribute to both frontend and backend development using Angular, Java, Python, and SQL.
-
-So far, I have developed a content editing feature that allows clients to manage their own web content and images, reducing their reliance on developers. I also built an analytics page that filters and counts certain strings from the database, added pagination to make large datasets easier to navigate, and introduced a daily refreshed JSON cache to minimize database queries and improve performance. In addition, I created a data processing pipeline that efficiently analyzes over 1.5 million XML forecast files and updates key database records, which has improved both accuracy and automation.
-
-This experience has given me the opportunity to work on real-world production systems, collaborate with cross-functional teams, and further strengthen my full-stack development skills.</li>
+            <li><b>Software Developer, Environment and Climate Change Canada [May 2025-August 2026]</b></li>
+            <li>During my 16-month co-op, I worked within an Agile team to develop and optimize a full-stack internal web application used by meteorologists. I engineered a content management feature using AngularJS and Java to streamline description updates, and architected a custom JSON caching system that significantly reduced data retrieval times by bypassing inefficient SQL queries on massive datasets. Additionally, I spearheaded a large-scale codebase refactoring initiative by updating ESLint for a legacy TypeScript frontend to catch compile-time bugs. Throughout the development lifecycle, I designed system architectures with UML diagrams and ensured software reliability by writing automated UI tests to verify non-breaking changes in a production environment.</li>
           </ul>
         </div>
       </div>
@@ -250,8 +248,21 @@ This experience has given me the opportunity to work on real-world production sy
         <div className="resume-section">
           <h2>Work Experience II</h2>
           <ul>
+            <li><b>AI Trainer, DataAnnotation [June 2026]</b></li>
+            <li>In this role, I evaluated and refined the code generation capabilities of large language models by conducting rigorous agentic coding assessments and debugging complex outputs. My work involved designing and testing Dockerfiles and containerized environments to ensure AI-generated code executed reliably across various system architectures. By performing comprehensive data analysis and assessing model logic, I provided structured technical feedback that directly improved the accuracy and algorithmic problem-solving performance of these advanced AI systems.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div
+        className="resume-container"
+        id="experience"
+      >
+        <div className="resume-section">
+          <h2>Work Experience III</h2>
+          <ul>
             <li><b>Software Engineer, Reviewer.ly [May 2024-August 2024]</b></li>
-            <li>I worked as a Software Engineer Intern to develop the website for the Reviewer.ly project at TMU’s LS3 Lab. I enhanced user profile management by implementing features to customize the profile using React.js, Next.js, and Spring Boot, leveraging react-query for efficient API interactions. I also developed a feature to view and resolve error reports, implementing an SMTP service for email notifications upon resolution, streamlining issue tracking and communication. I used OpenAPI and gRPC for efficient data retrieval from a MongoDB database, ensuring application performance and reliability while conducting thorough testing with Jest and Mockito to reduce potential bugs. During my work term, I had to address challenges in storing large profile pictures by compressing images on both the front-end and back-end, optimizing storage efficiency while maintaining image quality.</li>
+            <li>I leveraged front-end and back-end technologies to design and implement full-stack features that improved the user experience of the Reviewer.ly platform. I developed user profile management capabilities utilizing React.js, Next.js, and Spring Boot, and optimized system storage by engineering a dual-layer image compression solution to efficiently process large profile pictures. Furthermore, I built an automated issue-tracking interface integrated with an SMTP service for real-time email notifications, and streamlined backend microservice communication using gRPC and OpenAPI. To prevent regressions and ensure codebase reliability, I also designed and wrote comprehensive automated unit tests using Jest, React Testing Library, and Mockito.</li>
           </ul>
         </div>
       </div>
