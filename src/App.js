@@ -11,6 +11,7 @@ import {
   stats,
   experience,
   flagshipProject,
+  capstoneProject,
   featuredProjects,
   projects,
   skills,
@@ -562,6 +563,41 @@ function Projects() {
           </div>
         </div>
         <ScreenshotCarousel screenshots={flagshipProject.screenshots} />
+      </div>
+
+      <div className="capstone-card reveal" id={capstoneProject.slug}>
+        <div className="capstone-text">
+          <div className="featured-label">{capstoneProject.label}</div>
+          <div className="featured-top">
+            <h3>{capstoneProject.title}</h3>
+            <span className="period-tag">{capstoneProject.status}</span>
+          </div>
+          <p className="featured-subtitle">{capstoneProject.subtitle}</p>
+          <p className="featured-desc">{capstoneProject.description}</p>
+          <ul className="timeline-points capstone-points">
+            {capstoneProject.points.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+          <div className="tech-tags">
+            {capstoneProject.tech.map((t) => (
+              <span className="tech-tag" key={t}>
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="capstone-side">
+          <div className="capstone-metrics">
+            {capstoneProject.metrics.map((m) => (
+              <div className="stat-card" key={m.label}>
+                <span className="stat-value capstone-metric-value">{m.value}</span>
+                <span className="stat-label">{m.label}</span>
+              </div>
+            ))}
+          </div>
+          <p className="capstone-next">{capstoneProject.next}</p>
+        </div>
       </div>
 
       <div className="featured-projects">

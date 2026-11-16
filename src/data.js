@@ -97,6 +97,38 @@ export const flagshipProject = {
   ],
 };
 
+export const capstoneProject = {
+  slug: "proj-safeguard",
+  label: "Capstone Design Project",
+  title: "SafeGuard",
+  subtitle: "Audio Pipeline Owner · Multimodal Violence Prevention",
+  status: "In progress",
+  description:
+    "A real-time edge device that warns frontline workers in hospitals, transit, and customer-facing roles when an interaction is escalating. A Raspberry Pi 4 runs speech and facial emotion models locally and reports to a server that decides when to alert authorized staff. I own the audio pipeline end to end, from training data to on-device inference.",
+  points: [
+    "Adapted the pretrained Whisper Base encoder from transcription to six-class speech emotion recognition: trained a custom classification head on CREMA-D with the encoder frozen, then fine-tuned the encoder in a second stage.",
+    "Designed escalation logic that smooths anger probabilities with an exponential moving average, so a single noisy prediction can't raise a false alert.",
+    "Benchmarked SFTP against WebSockets on the Pi and chose WebSockets for device-to-server communication, cutting outgoing bandwidth by 33% (1.33 Mbit/s to 889 Kbit/s).",
+    "Tuning computation and buffer management so inference on the Pi's limited CPU and RAM keeps pace with audio arriving every 0.5 seconds.",
+  ],
+  metrics: [
+    { value: "91.3%", label: "Anger recall, the class that matters most for escalation" },
+    { value: "75.1%", label: "Accuracy across six emotion classes (0.75 macro F1)" },
+    { value: "33%", label: "Less outgoing bandwidth with WebSockets than SFTP" },
+    { value: "0.5s", label: "Audio processing interval on a Raspberry Pi 4" },
+  ],
+  next: "Now integrating with the team's MobileNetV2 facial emotion pipeline.",
+  tech: [
+    "Python",
+    "Whisper",
+    "Speech Emotion Recognition",
+    "Raspberry Pi 4",
+    "WebSockets",
+    "Edge Inference",
+    "Real-Time Audio",
+  ],
+};
+
 export const featuredProjects = [
   {
     slug: "proj-portify",
@@ -249,6 +281,7 @@ export const skillGraph = {
       usedIn: [
         { label: "Environment & Climate Change Canada", target: "exp-eccc" },
         { label: "Omello", target: "proj-omello" },
+        { label: "SafeGuard", target: "proj-safeguard" },
         { label: "DataAnnotation", target: "exp-dataannotation" },
         { label: "Gradient Descent from Scratch", target: "proj-gradient" },
       ],
@@ -304,6 +337,7 @@ export const skillGraph = {
       desc: "Large language models, RAG architectures, and on-device inference.",
       usedIn: [
         { label: "Omello", target: "proj-omello" },
+        { label: "SafeGuard", target: "proj-safeguard" },
         { label: "DataAnnotation", target: "exp-dataannotation" },
       ],
     },
